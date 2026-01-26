@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import UserRoles from "../domain/UserRole";
+import AccountStatus from "../domain/AccountStatus";
 
 const sellerSchema=new mongoose.Schema({
-    name:{
+    sellerName:{
         type:String,
         required:true
     },
