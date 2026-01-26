@@ -1,4 +1,6 @@
+import VerificationCode from "../model/VerificationCode.js";
 import sellerService from "../service/SellerService.js";
+import jwtProvider from "../utils/jwtProvider.js";
 
 class SellerController {
 
@@ -100,6 +102,29 @@ class SellerController {
     }
   }
 
+  //Verification OTp
+  async verifyOtp(req, res) {
+    try {
+      const { email, otp } = req.body;
+      const seller = await sellerService.getsellerbyEmail(email);
+      const verificationCode=await VerificationCode.findOne({email});
+      if (!verificationCode || verificationCode.otp !== otp) {
+        throw new Error('Invalid OTP');
+      }
+
+      const token =jwtProvider.createJwt({email})
+
+      const authResponse={
+        message:"Login Successful",
+        token,
+        seller
+      };
+      res.status(200).json(authResponse);  
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+
+}
 }
 
 export default new SellerController();
