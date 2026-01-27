@@ -1,6 +1,6 @@
-import { Seller } from "../models/Seller.js";
+import Seller from "../model/Seller.js";
 import JwtProvider from "../utils/jwtProvider.js";
-import Address from '../models/Address.js';
+import Address from '../model/Address.js';
 
 
 
@@ -10,13 +10,15 @@ class SellerService {
     //Create new seller
     async createSeller(sellerData) {
         try {
+            if (!sellerData) {
+                throw new Error('Seller data is required');
+            }
             const existingSeller = await Seller.findOne({ email: sellerData.email });
             if (existingSeller) {
                 throw new Error('Seller with this email already exists');
             }
 
-            let saveAddress = sellerData.pickupAddress;
-            saveAddress = await Address.create(sellerData.pickupAddress);
+            let saveAddress = await Address.create(sellerData.pickupAddress || {});
 
             const newSeller = new Seller({
                 sellerName: sellerData.name,
@@ -34,7 +36,7 @@ class SellerService {
             throw new Error('Error creating seller: ' + error.message);
         }
     };
-    
+
     //Get seller profile using JWT
     async getSellerProfile(jwt) {
         const seller = JwtProvider.getEmailFromJwt(jwt);
@@ -44,13 +46,13 @@ class SellerService {
     //Get seller by email
     async getsellerbyEmail(email) {
         try {
-            const seller = await Seller.findOne({email});
+            const seller = await Seller.findOne({ email });
             if (!seller) {
                 throw new Error('Seller not found');
             }
             return seller;
         } catch (error) {
-            throw new Error('Error fetching seller by email: ' + error.message);            
+            throw new Error('Error fetching seller by email: ' + error.message);
         }
     };
 
@@ -63,7 +65,7 @@ class SellerService {
             }
             return seller;
         } catch (error) {
-            throw new Error('Error fetching seller by ID: ' + error.message);            
+            throw new Error('Error fetching seller by ID: ' + error.message);
         }
     };
 
@@ -73,14 +75,18 @@ class SellerService {
             const sellers = await Seller.find(status ? { accountStatus: status } : {});
             return sellers;
         } catch (error) {
-            throw new Error('Error fetching all sellers: ' + error.message);            
+            throw new Error('Error fetching all sellers: ' + error.message);
         }
-        
+
     };
 
     //update seller account
-    async updateSeller(existingSeller,sellerData) {
+    async updateSeller(existingSeller, sellerData) {
         try {
+            // Prevent non-admins from updating account status via regular profile update
+            delete sellerData.accountStatus;
+            delete sellerData.role; // Also prevent role escalation
+
             Object.assign(existingSeller, sellerData);
             const updatedSeller = await existingSeller.save();
             return updatedSeller;
@@ -96,6 +102,7 @@ class SellerService {
             if (!updatedSeller) {
                 throw new Error('Seller not found');
             }
+            return updatedSeller;
         } catch (error) {
             throw new Error('Error updating seller account status: ' + error.message);
         }
