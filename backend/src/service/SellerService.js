@@ -1,8 +1,7 @@
 import Seller from "../model/Seller.js";
 import JwtProvider from "../utils/jwtProvider.js";
 import Address from '../model/Address.js';
-
-
+import { hashPassword } from "../utils/hashUtils.js";
 
 class SellerService {
 
@@ -20,10 +19,12 @@ class SellerService {
 
             let saveAddress = await Address.create(sellerData.pickupAddress || {});
 
+            const hashedPassword = await hashPassword(sellerData.password);
+
             const newSeller = new Seller({
                 sellerName: sellerData.name,
                 email: sellerData.email,
-                password: sellerData.password,
+                password: hashedPassword,
                 GST: sellerData.GST,
                 mobile: sellerData.mobile,
                 businessDetails: sellerData.businessDetails,

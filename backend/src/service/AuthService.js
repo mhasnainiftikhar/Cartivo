@@ -47,7 +47,7 @@ class AuthService {
     return { message: "Login OTP sent successfully" };
   }
 
-  //SIGNUP OTP
+  // SIGNUP OTP
   async sendSignupOtp(email) {
     const seller = await Seller.findOne({ email });
     if (seller) {
@@ -57,6 +57,15 @@ class AuthService {
     await this.sendOtp({ email, type: "signup" });
 
     return { message: "Signup OTP sent successfully" };
+  }
+
+  // Verify OTP
+  async verifyOtp(email, otp) {
+    const verificationCode = await VerificationCode.findOne({ email });
+    if (!verificationCode || verificationCode.otp !== otp) {
+      throw new Error("Invalid or expired OTP");
+    }
+    return true;
   }
 }
 
