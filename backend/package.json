@@ -4,7 +4,7 @@
   "description": "Cartivo is a Multivendor E-commerce Platform that allows users to buy and sell products from multiple vendors in a single transaction.",
   "main": "server.js",
   "type": "module",
- "scripts": {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon src/server.js"
   },
@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
@@ -20,6 +21,7 @@
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.5",
+    "nodemailer": "^7.0.12",
     "nodemon": "^3.1.11"
   }
 }
