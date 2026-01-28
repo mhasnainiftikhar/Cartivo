@@ -1,5 +1,5 @@
 import Seller from "../model/Seller.js";
-import JwtProvider from "../utils/jwtProvider.js";
+import JwtProvider from "../utils/JwtProvider.js";
 import Address from '../model/Address.js';
 import { hashPassword } from "../utils/hashUtils.js";
 
@@ -86,7 +86,7 @@ class SellerService {
         try {
             // Prevent non-admins from updating account status via regular profile update
             delete sellerData.accountStatus;
-            delete sellerData.role; 
+            delete sellerData.role;
 
             Object.assign(existingSeller, sellerData);
             const updatedSeller = await existingSeller.save();

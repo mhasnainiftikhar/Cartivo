@@ -5,6 +5,8 @@ import connectDB from "./config/db.js";
 import sellerRouter from "./routes/SellerRoutes.js";
 import adminRouter from "./routes/AdminRoutes.js";
 import authRouter from "./routes/AuthRoutes.js";
+import userRouter from "./routes/UserRoutes.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 
 const app = express();
@@ -27,12 +29,16 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/sellers", sellerRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/users", userRouter);
 
 
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
+
+// Global Error Handler
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
