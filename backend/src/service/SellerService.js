@@ -84,7 +84,7 @@ class SellerService {
     //update seller account
     async updateSeller(existingSeller, sellerData) {
         try {
-            // Prevent non-admins from updating account status via regular profile update
+            
             delete sellerData.accountStatus;
             delete sellerData.role;
 

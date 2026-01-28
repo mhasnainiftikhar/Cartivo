@@ -113,12 +113,12 @@ class AuthService {
     }
 
     const token = jwtProvider.createJwt({ email: user.email });
-    // Remove password from response
+    
     user.password = undefined;
     return { token, user };
   }
 
-  // Legacy/Seller-only createUser (can be integrated or kept as is)
+  
   async createUser(req) {
     const { email, fullName } = req;
 
