@@ -7,6 +7,7 @@ import adminRouter from "./routes/AdminRoutes.js";
 import authRouter from "./routes/AuthRoutes.js";
 import userRouter from "./routes/UserRoutes.js";
 import productRouter from "./routes/ProductRoutes.js";
+import cartRouter from "./routes/CartRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 
@@ -32,6 +33,7 @@ app.use("/api/sellers", sellerRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
+app.use("/api/cart", cartRouter);
 
 
 // 404 handler

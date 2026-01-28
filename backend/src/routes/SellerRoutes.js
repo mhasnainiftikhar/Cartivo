@@ -11,7 +11,7 @@ sellerRouter.post("/signup/otp", authController.sendSignupOtp);
 sellerRouter.post("/signup", sellerController.createSeller);
 
 // Login (OTP + Password)
-sellerRouter.post("/login/otp", authController.sendLoginOtp);
+sellerRouter.post("/login/otp", authController.sendLoginOtp)
 sellerRouter.post("/login", authController.sellerLogin);
 
 // Verify OTP
