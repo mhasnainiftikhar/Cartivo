@@ -1,6 +1,6 @@
 import VerificationCode from "../model/VerificationCode.js";
 import sellerService from "../service/SellerService.js";
-import jwtProvider from "../utils/jwtProvider.js";
+import jwtProvider from "../utils/JwtProvider.js";
 import authService from "../service/AuthService.js";
 
 class SellerController {
@@ -45,13 +45,13 @@ class SellerController {
         return res.status(400).json({ message: "Email, OTP, and Password are required" });
       }
 
-     
+
       await authService.verifyOtp(email, otp);
 
-     
+
       const newSeller = await sellerService.createSeller(req.body);
 
-      
+
       await VerificationCode.deleteOne({ email });
 
       const token = jwtProvider.createJwt({ email: newSeller.email });

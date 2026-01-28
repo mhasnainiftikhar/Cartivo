@@ -3,16 +3,14 @@ import authController from "../controller/AuthController.js";
 
 const authRouter = express.Router();
 
-// --- Auth Flow ---
-
-// Request OTP
+// Signup
 authRouter.post("/signup/otp", authController.sendSignupOtp);
-authRouter.post("/login/otp", authController.sendLoginOtp);
+authRouter.post("/signup", authController.signup);
 
-// Pre-verify OTP
-authRouter.post("/verify-otp", authController.verifyOtp);
-
-// Complete Action 
+// Login (Password only)
 authRouter.post("/login", authController.login);
+
+// Verify OTP
+authRouter.post("/verify-otp", authController.verifyOtp);
 
 export default authRouter;

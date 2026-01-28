@@ -1,13 +1,23 @@
 import express from "express";
 import sellerController from "../controller/SellerController.js";
 import authenticate from "../middleware/authenticate.js";
+import authController from "../controller/AuthController.js";
 
 const sellerRouter = express.Router();
 
-// --- Public Routes ---
+
+// Signup
+sellerRouter.post("/signup/otp", authController.sendSignupOtp);
 sellerRouter.post("/signup", sellerController.createSeller);
 
-// --- Protected & Admin Routes ---
+// Login (OTP + Password)
+sellerRouter.post("/login/otp", authController.sendLoginOtp);
+sellerRouter.post("/login", authController.sellerLogin);
+
+// Verify OTP
+sellerRouter.post("/verify-otp", authController.verifyOtp);
+
+// --- Protected Routes ---
 
 // Seller profile (JWT based)
 sellerRouter.get("/profile", authenticate, sellerController.getSellerProfile);

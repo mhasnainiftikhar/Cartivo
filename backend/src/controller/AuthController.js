@@ -1,5 +1,5 @@
 import VerificationCode from "../model/VerificationCode.js";
-import jwtProvider from "../utils/jwtProvider.js";
+import jwtProvider from "../utils/JwtProvider.js";
 import authService from "../service/AuthService.js";
 import { comparePassword } from "../utils/hashUtils.js";
 import Seller from "../model/Seller.js";
@@ -14,6 +14,23 @@ class AuthController {
       }
       const response = await authService.sendSignupOtp(email);
       res.status(200).json(response);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  // Complete Signup (Verify OTP + Password)
+  async signup(req, res) {
+    try {
+      const { email, name, password, otp } = req.body;
+      if (!email || !name || !password || !otp) {
+        return res.status(400).json({ message: "Email, name, password, and OTP are required" });
+      }
+      const response = await authService.signup({ email, name, password, otp });
+      res.status(201).json({
+        message: "User registered successfully",
+        ...response
+      });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -47,8 +64,25 @@ class AuthController {
     }
   }
 
-  //Complete Login (Verify OTP + Password)
+  // User Login (Email + Password only)
   async login(req, res) {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+      const response = await authService.login({ email, password });
+      res.status(200).json({
+        message: "Login successful",
+        ...response
+      });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  // Seller Login (Verify OTP + Password)
+  async sellerLogin(req, res) {
     try {
       const { email, otp, password } = req.body;
       if (!email || !otp || !password) {

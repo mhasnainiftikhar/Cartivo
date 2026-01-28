@@ -1,11 +1,15 @@
+import Cart from "../model/Cart.js";
 import Seller from "../model/Seller.js";
+import User from "../model/User.js";
 import VerificationCode from "../model/VerificationCode.js";
 import generateOtp from "../utils/GenerateOtp.js";
 import emailService from "../utils/emailService.js";
+import jwtProvider from "../utils/JwtProvider.js"
 import {
   loginOtpTemplate,
   signupOtpTemplate,
 } from "../utils/emailTemplates.js";
+import { hashPassword } from "../utils/hashUtils.js";
 
 class AuthService {
 
@@ -50,7 +54,8 @@ class AuthService {
   // SIGNUP OTP
   async sendSignupOtp(email) {
     const seller = await Seller.findOne({ email });
-    if (seller) {
+    const user = await User.findOne({ email });
+    if (seller || user) {
       throw new Error("User already exists");
     }
 
@@ -66,6 +71,72 @@ class AuthService {
       throw new Error("Invalid or expired OTP");
     }
     return true;
+  }
+
+  // Signup Implementation
+  async signup({ email, name, password, otp }) {
+    await this.verifyOtp(email, otp);
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new Error("User already exists");
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const user = new User({
+      email,
+      name,
+      password: hashedPassword
+    });
+
+    await user.save();
+
+    const cart = new Cart({ user: user._id });
+    await cart.save();
+
+    await VerificationCode.deleteOne({ email });
+
+    const token = jwtProvider.createJwt({ email: user.email });
+    return { token, user };
+  }
+
+  // Login Implementation (Password only)
+  async login({ email, password }) {
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const isPasswordValid = await comparePassword(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error("Invalid password");
+    }
+
+    const token = jwtProvider.createJwt({ email: user.email });
+    // Remove password from response
+    user.password = undefined;
+    return { token, user };
+  }
+
+  // Legacy/Seller-only createUser (can be integrated or kept as is)
+  async createUser(req) {
+    const { email, fullName } = req;
+
+    let user = await User.findOne({ email });
+    if (user) {
+      throw new Error("User Already Exists")
+    }
+
+    user = new User({
+      email, name: fullName, password: await hashPassword("defaultPassword") // This seems incomplete in original
+    })
+
+    await user.save();
+
+    const cart = new Cart({ user: user._id })
+    await cart.save();
+
+    return jwtProvider.createJwt({ email })
   }
 }
 
