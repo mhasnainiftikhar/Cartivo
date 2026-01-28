@@ -86,7 +86,7 @@ class SellerService {
         try {
             // Prevent non-admins from updating account status via regular profile update
             delete sellerData.accountStatus;
-            delete sellerData.role; // Also prevent role escalation
+            delete sellerData.role; 
 
             Object.assign(existingSeller, sellerData);
             const updatedSeller = await existingSeller.save();

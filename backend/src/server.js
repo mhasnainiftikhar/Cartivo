@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import sellerRouter from "./routes/SellerRoutes.js";
 import adminRouter from "./routes/AdminRoutes.js";
+import authRouter from "./routes/AuthRoutes.js";
 
 
 const app = express();
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 });
 
 // Routes
+app.use("/api/auth", authRouter);
 app.use("/api/sellers", sellerRouter);
 app.use("/api/admin", adminRouter);
 
