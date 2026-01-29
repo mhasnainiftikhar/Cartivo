@@ -11,6 +11,9 @@ import cartRouter from "./routes/CartRoutes.js";
 import orderRouter from "./routes/OrderRoutes.js";
 import paymentRouter from "./routes/PaymentRoutes.js";
 import sellerReportRouter from "./routes/SellerReportRoutes.js";
+import dealRouter from "./routes/DealRoutes.js";
+import homeCategoryRouter from "./routes/HomeCategoryRoutes.js";
+import homeRouter from "./routes/HomeRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 
@@ -40,6 +43,9 @@ app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/seller-reports", sellerReportRouter);
+app.use("/api/deals", dealRouter);
+app.use("/api/home-categories", homeCategoryRouter);
+app.use("/api/home", homeRouter);
 
 
 // 404 handler
