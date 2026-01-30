@@ -42,14 +42,23 @@ const electronics = [
 
 const ElectronicsCategory = () => {
   return (
-    <section className="bg-white border-b">
-      <div className="flex flex-wrap justify-between gap-6 lg:gap-10 px-5 py-6 lg:px-10">
-        {electronics.map((item) => (
-          <ElectronicCategoryCard
-            key={item.categoryId}
-            item={item}
-          />
-        ))}
+    <section className="bg-white border-b py-16">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10">
+        <div className="flex flex-col items-center mb-12 text-center">
+          <h2 className="text-3xl lg:text-4xl font-extrabold text-[#001742] tracking-tight">Electronics & Gadgets</h2>
+          <p className="mt-3 text-lg text-gray-500 font-medium">Top picks for your digital lifestyle.</p>
+          <button className="mt-4 text-blue-600 font-bold text-sm lg:text-base hover:underline transition-all">
+            View All Electronics
+          </button>
+        </div>
+        <div className="flex flex-wrap justify-between gap-6 lg:gap-10">
+          {electronics.map((item) => (
+            <ElectronicCategoryCard
+              key={item.categoryId}
+              item={item}
+            />
+          ))}
+        </div>
       </div>
     </section>
   )

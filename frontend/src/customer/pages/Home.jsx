@@ -1,4 +1,6 @@
 import Hero from './Home/Hero'
+import BecomeSeller from './Home/BecomeSeller'
+import ShopByCategory from './ShopByCategory/ShopByCategory'
 import ElectronicsCategory from './ElectronicCategory/ElectronicsCategory'
 import Grid from './Grid/Grid'
 import Deal from './Deals/Deal'
@@ -17,6 +19,12 @@ const Home = () => {
           </section>
           <section>
             <Deal />
+          </section>
+          <section>
+            <ShopByCategory />
+          </section>
+          <section>
+            <BecomeSeller />
           </section>
         </div>
       </div>

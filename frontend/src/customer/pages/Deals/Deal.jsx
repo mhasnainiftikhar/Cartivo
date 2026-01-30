@@ -40,12 +40,10 @@ const Deal = () => {
       {/* Decorative background */}
       <div className='absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50' />
 
-      <div className='mb-12 px-5 lg:px-10 flex flex-col lg:flex-row lg:items-end justify-between gap-4'>
-        <div>
-          <h2 className='text-4xl lg:text-5xl font-extrabold text-[#001742] tracking-tight'>Today's Hot Deals</h2>
-          <p className='mt-3 text-lg text-gray-500 font-medium'>Exclusive offers ending soon. Grab them before they're gone!</p>
-        </div>
-        <button className='text-blue-600 font-bold flex items-center hover:text-blue-700 transition-colors group'>
+      <div className='mb-12 px-5 lg:px-10 flex flex-col items-center text-center'>
+        <h2 className='text-4xl lg:text-5xl font-extrabold text-[#001742] tracking-tight'>Today's Hot Deals</h2>
+        <p className='mt-3 text-lg text-gray-500 font-medium'>Exclusive offers ending soon. Grab them before they're gone!</p>
+        <button className='mt-6 text-blue-600 font-bold flex items-center hover:text-blue-700 transition-colors group'>
           View All Deals
           <svg className='ml-2 w-5 h-5 transition-transform group-hover:translate-x-1' fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
