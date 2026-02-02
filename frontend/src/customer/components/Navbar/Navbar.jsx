@@ -198,12 +198,12 @@ const Navbar = () => {
                             <IconButton onClick={() => navigate('/login')} sx={{ color: '#001742' }}>
                                 <PersonIcon />
                             </IconButton>
-                            <IconButton sx={{ color: '#001742' }}>
+                            <IconButton onClick={() => navigate('/wishlist')} sx={{ color: '#001742' }}>
                                 <Badge badgeContent={4} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
                                     <WishlistIcon />
                                 </Badge>
                             </IconButton>
-                            <IconButton sx={{ color: '#001742' }}>
+                            <IconButton onClick={() => navigate('/cart')} sx={{ color: '#001742' }}>
                                 <Badge badgeContent={2} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
                                     <CartIcon />
                                 </Badge>

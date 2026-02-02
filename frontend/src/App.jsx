@@ -6,6 +6,8 @@ import Product from './customer/pages/Product/Product'
 import Navbar from './customer/components/Navbar/Navbar'
 import Login from './customer/pages/Auth/Login'
 import Signup from './customer/pages/Auth/Signup'
+import Cart from './customer/pages/Cart/Cart'
+import Wishlist from './customer/pages/Wishlist/Wishlist'
 
 const App = () => {
   const location = useLocation();
@@ -17,6 +19,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Product />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
