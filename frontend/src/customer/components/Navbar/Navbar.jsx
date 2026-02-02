@@ -195,7 +195,7 @@ const Navbar = () => {
                                     <SearchIcon />
                                 </IconButton>
                             )}
-                            <IconButton sx={{ color: '#001742' }}>
+                            <IconButton onClick={() => navigate('/login')} sx={{ color: '#001742' }}>
                                 <PersonIcon />
                             </IconButton>
                             <IconButton sx={{ color: '#001742' }}>
