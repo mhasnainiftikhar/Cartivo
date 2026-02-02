@@ -19,7 +19,7 @@ const DealCard = ({ item }) => {
         <h3 className='font-semibold text-gray-900 text-lg mb-4 line-clamp-1'>{item.name}</h3>
       </div>
 
-      <button className='w-full py-3 bg-[#001742] text-white rounded-xl text-sm font-bold hover:bg-blue-900 transition-all duration-300 transform active:scale-95 shadow-md shadow-blue-900/10'>
+      <button className='w-full py-3 bg-[#febd69] text-[#001742] rounded-xl text-sm font-bold hover:bg-[#f3a847] transition-all duration-300 transform active:scale-95 shadow-md shadow-black/5'>
         Shop Now
       </button>
     </div>
