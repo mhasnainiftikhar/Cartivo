@@ -76,7 +76,7 @@ const Footer = () => {
                 mt: 10
             }}
         >
-            <Container maxWidth="xl">
+            <Container maxWidth={false} sx={{ maxWidth: '1440px', mx: 'auto', px: { xs: 2.5, lg: 10 } }}>
                 <Grid container spacing={4}>
                     {/* Brand and Newsletter Section */}
                     <Grid item xs={12} lg={4}>

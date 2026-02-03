@@ -37,7 +37,7 @@ const Checkout = () => {
 
     return (
         <Box className="min-h-screen bg-gray-50/50 pb-20">
-            <div className="max-w-[1440px] mx-auto px-5 lg:px-10 py-10">
+            <div className="max-w-[1440px] mx-auto px-5 lg:px-20 py-10">
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-10">
                     <IconButton

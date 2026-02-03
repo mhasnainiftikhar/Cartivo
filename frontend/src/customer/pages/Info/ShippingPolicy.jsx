@@ -3,7 +3,7 @@ import { Container, Typography, Box, Divider, Paper } from '@mui/material';
 
 const ShippingPolicy = () => {
     return (
-        <Container maxWidth="md" sx={{ py: 8 }}>
+        <Container maxWidth={false} sx={{ maxWidth: '1440px', px: { xs: 2.5, lg: 10 }, py: 10, mx: 'auto' }}>
             <Typography variant="h3" gutterBottom sx={{ fontWeight: 800 }}>
                 Shipping & Returns
             </Typography>

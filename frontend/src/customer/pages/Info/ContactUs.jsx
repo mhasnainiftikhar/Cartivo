@@ -22,7 +22,7 @@ import {
 
 const ContactUs = () => {
     return (
-        <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Container maxWidth={false} sx={{ maxWidth: '1440px', px: { xs: 2.5, lg: 10 }, py: 10, mx: 'auto' }}>
             <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: 800, mb: 2 }}>
                 Contact Us
             </Typography>

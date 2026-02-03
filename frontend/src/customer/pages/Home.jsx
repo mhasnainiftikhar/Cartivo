@@ -33,7 +33,7 @@ const Home = () => {
     <div className='bg-gray-50 min-h-screen'>
       <Hero />
 
-      <Box sx={{ maxWidth: '1440px', mx: 'auto', mt: { xs: 0, lg: -10 }, position: 'relative', zIndex: 10, px: { xs: 2, lg: 10 } }}>
+      <Box sx={{ maxWidth: '1440px', mx: 'auto', mt: { xs: 0, lg: -10 }, position: 'relative', zIndex: 10, px: { xs: 2.5, lg: 10 } }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={4}>
             <CategoryGrid title="Refresh Your Home" categories={homeCategories} />

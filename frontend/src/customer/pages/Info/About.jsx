@@ -4,7 +4,7 @@ import { Storefront, Groups, Public, EmojiEvents } from '@mui/icons-material';
 
 const About = () => {
     return (
-        <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Container maxWidth={false} sx={{ maxWidth: '1440px', px: { xs: 2.5, lg: 10 }, py: 10, mx: 'auto' }}>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
                 <Typography variant="h3" sx={{ fontWeight: 800, mb: 2 }}>
                     About Cartivo
