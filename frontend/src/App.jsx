@@ -10,10 +10,18 @@ import Cart from './customer/pages/Cart/Cart'
 import Wishlist from './customer/pages/Wishlist/Wishlist'
 import ProductDetails from './customer/pages/ProductDetails/ProductDetails'
 import Checkout from './customer/pages/Checkout/Checkout'
+import Footer from './customer/components/Footer/Footer'
+import TermsAndConditions from './customer/pages/Info/TermsAndConditions'
+import PrivacyPolicy from './customer/pages/Info/PrivacyPolicy'
+import CustomerService from './customer/pages/Info/CustomerService'
+import ContactUs from './customer/pages/Info/ContactUs'
+import About from './customer/pages/Info/About'
+import ShippingPolicy from './customer/pages/Info/ShippingPolicy'
 
 const App = () => {
   const location = useLocation();
   const hideNavbar = location.pathname === '/login' || location.pathname === '/signup';
+  const hideFooter = location.pathname === '/login' || location.pathname === '/signup';
 
   return (
     <ThemeProvider theme={CustomerTheme}>
@@ -27,7 +35,16 @@ const App = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+        {/* Informational Routes */}
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/customer-service" element={<CustomerService />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
       </Routes>
+      {!hideFooter && <Footer />}
     </ThemeProvider>
   )
 }
