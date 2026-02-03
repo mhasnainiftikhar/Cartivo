@@ -8,6 +8,8 @@ import Login from './customer/pages/Auth/Login'
 import Signup from './customer/pages/Auth/Signup'
 import Cart from './customer/pages/Cart/Cart'
 import Wishlist from './customer/pages/Wishlist/Wishlist'
+import ProductDetails from './customer/pages/ProductDetails/ProductDetails'
+import Checkout from './customer/pages/Checkout/Checkout'
 
 const App = () => {
   const location = useLocation();
@@ -19,8 +21,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Product />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>

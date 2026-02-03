@@ -102,7 +102,8 @@ const Cart = () => {
                             <Button
                                 fullWidth
                                 variant="contained"
-                                className="bg-[#001742] hover:bg-[#001742]/90 text-white py-4 rounded-2xl font-black text-lg shadow-lg shadow-blue-900/10 mb-4 capitalize"
+                                onClick={() => navigate('/checkout')}
+                                className="bg-[#001742] hover:bg-[#081e4b] text-white py-4 rounded-2xl font-black text-lg shadow-lg shadow-blue-900/10 mb-4 capitalize"
                             >
                                 Checkout Now
                             </Button>

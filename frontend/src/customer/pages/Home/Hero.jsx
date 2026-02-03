@@ -54,7 +54,7 @@ const Hero = () => {
             {/* Slide Content */}
             <div className='relative h-full px-5 lg:px-20 flex items-center max-w-7xl mx-auto'>
                 <div className={`transition-all duration-1000 transform ${currentSlide ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'} w-full lg:w-1/2`}>
-                    <h1 className='text-4xl lg:text-7xl font-extrabold text-white leading-tight mb-6'>
+                    <h1 className='text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-6'>
                         {slides[currentSlide].title.split(' ').map((word, i) =>
                             i === slides[currentSlide].title.split(' ').length - 1 ?
                                 <span key={i} className={slides[currentSlide].accentColor}>{word}</span> :
