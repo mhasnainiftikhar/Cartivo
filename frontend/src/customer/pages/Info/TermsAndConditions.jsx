@@ -3,57 +3,44 @@ import { Container, Typography, Box, Divider } from '@mui/material';
 
 const TermsAndConditions = () => {
     return (
-        <Container maxWidth={false} sx={{ maxWidth: '1440px', px: { xs: 2.5, lg: 10 }, py: 10, mx: 'auto' }}>
-            <Typography variant="h3" gutterBottom sx={{ fontWeight: 800 }}>
-                Terms & Conditions
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-                Last updated: February 3, 2026
-            </Typography>
-
-            <Divider sx={{ mb: 4 }} />
-
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>1. Agreement to Terms</Typography>
-                <Typography variant="body1" paragraph>
-                    Welcome to Cartivo. By accessing or using our website, you agree to be bound by these Terms & Conditions and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.
+        <Container maxWidth={false} sx={{ maxWidth: '1000px', mx: 'auto', px: { xs: 2.5, lg: 5 }, py: 12 }}>
+            <Box sx={{ borderBottom: '1px solid #e0e0e0', pb: 4, mb: 6 }}>
+                <Typography variant="overline" color="primary.main" sx={{ fontWeight: 800, letterSpacing: 1.5 }}>LEGAL REFERENCE</Typography>
+                <Typography variant="h2" sx={{ fontWeight: 900, mt: 1, mb: 2 }}>Terms of Service</Typography>
+                <Typography variant="body1" color="text.secondary">
+                    Effective Date: February 3, 2026 &bull; Version 2.4
                 </Typography>
             </Box>
 
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>2. Use License</Typography>
-                <Typography variant="body1" paragraph>
-                    Permission is granted to temporarily download one copy of the materials (information or software) on Cartivo's website for personal, non-commercial transitory viewing only.
+            <Box component="article" sx={{
+                '& h5': { fontWeight: 800, mt: 5, mb: 2, fontSize: '1.25rem', color: '#0f172a' },
+                '& p': { lineHeight: 1.8, mb: 2, color: '#334155' },
+                '& ul': { mb: 2, pl: 2, color: '#334155' },
+                '& li': { mb: 1, lineHeight: 1.6 }
+            }}>
+                <Typography variant="h5">1. Overview</Typography>
+                <Typography variant="body1">
+                    This website is operated by Cartivo Inc. Throughout the site, the terms "we", "us" and "our" refer to Cartivo. Cartivo offers this website, including all information, tools and services available from this site to you, the user, conditioned upon your acceptance of all terms, conditions, policies and notices stated here.
                 </Typography>
-                <Typography variant="body1" paragraph>
-                    This is the grant of a license, not a transfer of title, and under this license you may not:
-                </Typography>
-                <ul>
-                    <li>Modify or copy the materials;</li>
-                    <li>Use the materials for any commercial purpose, or for any public display;</li>
-                    <li>Attempt to decompile or reverse engineer any software contained on the website;</li>
-                    <li>Remove any copyright or other proprietary notations from the materials.</li>
-                </ul>
-            </Box>
 
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>3. Account Responsibility</Typography>
-                <Typography variant="body1" paragraph>
-                    If you use this site, you are responsible for maintaining the confidentiality of your account and password and for restricting access to your computer, and you agree to accept responsibility for all activities that occur under your account or password.
+                <Typography variant="h5">2. User Agreement</Typography>
+                <Typography variant="body1">
+                    By visiting our site and/ or purchasing something from us, you engage in our "Service" and agree to be bound by the following terms and conditions ("Terms of Service", "Terms"), including those additional terms and conditions and policies referenced herein and/or available by hyperlink.
                 </Typography>
-            </Box>
 
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>4. Product Descriptions</Typography>
-                <Typography variant="body1" paragraph>
-                    Cartivo attempts to be as accurate as possible. However, Cartivo does not warrant that product descriptions or other content of this site is accurate, complete, reliable, current, or error-free.
+                <Typography variant="h5">3. General Conditions</Typography>
+                <Typography variant="body1">
+                    We reserve the right to refuse service to anyone for any reason at any time. You understand that your content (not including credit card information), may be transferred unencrypted and involve (a) transmissions over various networks; and (b) changes to conform and adapt to technical requirements of connecting networks or devices.
                 </Typography>
-            </Box>
 
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>5. Limitation of Liability</Typography>
-                <Typography variant="body1" paragraph>
-                    In no event shall Cartivo or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Cartivo's website.
+                <Typography variant="h5">4. Accuracy of Billing</Typography>
+                <Typography variant="body1">
+                    We reserve the right to refuse any order you place with us. We may, in our sole discretion, limit or cancel quantities purchased per person, per household or per order. These restrictions may include orders placed by or under the same customer account, the same credit card, and/or orders that use the same billing and/or shipping address.
+                </Typography>
+
+                <Typography variant="h5">5. Third-Party Links</Typography>
+                <Typography variant="body1">
+                    Certain content, products and services available via our Service may include materials from third-parties. Third-party links on this site may direct you to third-party websites that are not affiliated with us.
                 </Typography>
             </Box>
         </Container>

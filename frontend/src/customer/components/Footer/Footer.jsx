@@ -31,9 +31,9 @@ const Footer = () => {
             title: 'Company',
             links: [
                 { label: 'About Us', path: '/about' },
-                { label: 'Careers', path: '/about' }, // Redirect to About for now
-                { label: 'Our Blog', path: '/products' }, // Redirect to Products for now
-                { label: 'Press', path: '/about' },
+                { label: 'Careers', path: '/careers' },
+                { label: 'Our Blog', path: '/blog' },
+                { label: 'Press', path: '/press' },
             ],
         },
         {
@@ -50,7 +50,7 @@ const Footer = () => {
             links: [
                 { label: 'Help Center', path: '/customer-service' },
                 { label: 'Shipping & Delivery', path: '/shipping-policy' },
-                { label: 'Returns & Refunds', path: '/shipping-policy' },
+                { label: 'Store Locations', path: '/stores' },
                 { label: 'Contact Us', path: '/contact-us' },
             ],
         },
@@ -59,8 +59,8 @@ const Footer = () => {
             links: [
                 { label: 'Terms & Conditions', path: '/terms-and-conditions' },
                 { label: 'Privacy Policy', path: '/privacy-policy' },
-                { label: 'Cookie Policy', path: '/privacy-policy' }, // consolidated
-                { label: 'Security', path: '/terms-and-conditions' }, // consolidated
+                { label: 'Cookie Policy', path: '/cookie-policy' },
+                { label: 'Security', path: '/security' },
             ],
         },
     ];
