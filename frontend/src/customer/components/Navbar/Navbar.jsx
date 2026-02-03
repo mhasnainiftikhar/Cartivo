@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { styled, alpha } from '@mui/material/styles';
 import { Link, useNavigate } from 'react-router-dom';
+import { Menu, MenuItem } from '@mui/material';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -78,7 +79,16 @@ const NavButton = styled(Button)(({ theme }) => ({
     },
 }));
 
-const categories = ["Men", "Women", "Kids", "Home & Living", "Beauty", "Electronics"];
+const categoryData = {
+    "Men": ["T-Shirts", "Jeans", "Shoes", "Watches", "Activewear"],
+    "Women": ["Dresses", "Tops", "Skirts", "Bags", "Jewelry"],
+    "Kids": ["Boys Clothing", "Girls Clothing", "Toys", "School Supplies"],
+    "Home & Living": ["Decor", "Bedding", "Kitchen", "Furniture"],
+    "Beauty": ["Makeup", "Skincare", "Fragrance", "Haircare"],
+    "Electronics": ["Mobiles", "Laptops", "Headphones", "Cameras"]
+};
+
+const categories = Object.keys(categoryData);
 
 const Navbar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -91,9 +101,28 @@ const Navbar = () => {
         setMobileOpen(!mobileOpen);
     };
 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentCategory, setCurrentCategory] = useState(null);
+
+    const handleCategoryHover = (event, category) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentCategory(category);
+    };
+
+    const handleCategoryClose = () => {
+        setAnchorEl(null);
+        setCurrentCategory(null);
+    };
+
     const handleCategoryClick = (category) => {
         navigate(`/products?category=${category.toLowerCase()}`);
         if (mobileOpen) setMobileOpen(false);
+        handleCategoryClose();
+    };
+
+    const handleSubCategoryClick = (category, subCategory) => {
+        navigate(`/products?category=${category.toLowerCase()}&sub=${subCategory.toLowerCase()}`);
+        handleCategoryClose();
     };
 
     const drawer = (
@@ -166,12 +195,36 @@ const Navbar = () => {
                             Cartivo<span style={{ color: '#2563eb' }}>.</span>
                         </Typography>
 
-                        {/* Categories Desktop */}
                         {!isMobile && (
                             <Box sx={{ display: 'flex', gap: 1, ml: 4 }}>
                                 {categories.map((cat) => (
-                                    <NavButton key={cat} onClick={() => handleCategoryClick(cat)}>{cat}</NavButton>
+                                    <NavButton
+                                        key={cat}
+                                        onClick={() => handleCategoryClick(cat)}
+                                        onMouseEnter={(e) => handleCategoryHover(e, cat)}
+                                        aria-controls={currentCategory === cat ? 'category-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={currentCategory === cat ? 'true' : undefined}
+                                    >
+                                        {cat}
+                                    </NavButton>
                                 ))}
+                                <Menu
+                                    id="category-menu"
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleCategoryClose}
+                                    MenuListProps={{
+                                        onMouseLeave: handleCategoryClose,
+                                    }}
+                                    sx={{ mt: 1 }}
+                                >
+                                    {currentCategory && categoryData[currentCategory]?.map((sub) => (
+                                        <MenuItem key={sub} onClick={() => handleSubCategoryClick(currentCategory, sub)}>
+                                            {sub}
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
                             </Box>
                         )}
 
