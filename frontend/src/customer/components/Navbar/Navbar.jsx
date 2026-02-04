@@ -83,7 +83,7 @@ const categoryData = {
     "Men": ["T-Shirts", "Jeans", "Shoes", "Watches", "Activewear"],
     "Women": ["Dresses", "Tops", "Skirts", "Bags", "Jewelry"],
     "Kids": ["Boys Clothing", "Girls Clothing", "Toys", "School Supplies"],
-    "Home & Living": ["Decor", "Bedding", "Kitchen", "Furniture"],
+    "Home": ["Decor", "Bedding", "Kitchen", "Furniture"],
     "Beauty": ["Makeup", "Skincare", "Fragrance", "Haircare"],
     "Electronics": ["Mobiles", "Laptops", "Headphones", "Cameras"]
 };
@@ -239,6 +239,25 @@ const Navbar = () => {
                                     inputProps={{ 'aria-label': 'search' }}
                                 />
                             </Search>
+                        )}
+
+                        {/* Seller Button */}
+                        {!isMobile && (
+                            <Button
+                                onClick={() => navigate('/seller')}
+                                sx={{
+                                    mr: 2,
+                                    color: '#001742',
+                                    fontWeight: 600,
+                                    textTransform: 'none',
+                                    '&:hover': {
+                                        backgroundColor: 'transparent',
+                                        color: theme.palette.primary.main,
+                                    }
+                                }}
+                            >
+                                Seller
+                            </Button>
                         )}
 
                         {/* Action Icons */}
