@@ -34,7 +34,7 @@ const menuItems = [
     { text: 'Profile', icon: <ProfileIcon />, path: '/seller/profile' },
 ];
 
-const SellerSidebar = () => {
+const SellerSidebar = ({ open, onClose }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -44,20 +44,9 @@ const SellerSidebar = () => {
         navigate('/');
     };
 
-    return (
-        <Drawer
-            variant="permanent"
-            sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-            }}
-        >
-            <Toolbar>
-                <Typography variant="h6" noWrap component="div">
-                    Seller Panel
-                </Typography>
-            </Toolbar>
+    const drawerContent = (
+        <div>
+            <Toolbar /> {/* Spacer for Navbar */}
             <Divider />
             <Box sx={{ overflow: 'auto' }}>
                 <List>
@@ -65,7 +54,10 @@ const SellerSidebar = () => {
                         <ListItem
                             button
                             key={item.text}
-                            onClick={() => navigate(item.path)}
+                            onClick={() => {
+                                navigate(item.path);
+                                if (onClose) onClose(); // Close drawer on mobile selection
+                            }}
                             selected={location.pathname === item.path}
                         >
                             <ListItemIcon>
@@ -85,7 +77,40 @@ const SellerSidebar = () => {
                     </ListItem>
                 </List>
             </Box>
-        </Drawer>
+        </div>
+    );
+
+    return (
+        <Box
+            component="nav"
+            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        >
+            {/* Mobile Drawer */}
+            <Drawer
+                variant="temporary"
+                open={open}
+                onClose={onClose}
+                ModalProps={{ keepMounted: true }} // Better open performance on mobile.
+                sx={{
+                    display: { xs: 'block', sm: 'none' },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                }}
+            >
+                {drawerContent}
+            </Drawer>
+
+            {/* Desktop Drawer */}
+            <Drawer
+                variant="permanent"
+                sx={{
+                    display: { xs: 'none', sm: 'block' },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                }}
+                open
+            >
+                {drawerContent}
+            </Drawer>
+        </Box>
     );
 };
 
