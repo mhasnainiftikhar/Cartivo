@@ -8,7 +8,8 @@ import {
     Box,
     Toolbar,
     Divider,
-    Typography
+    Typography,
+    useTheme
 } from '@mui/material';
 import {
     Dashboard as DashboardIcon,
@@ -37,6 +38,7 @@ const menuItems = [
 const SellerSidebar = ({ open, onClose }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const theme = useTheme();
 
     const handleLogout = () => {
         // Implement logout logic here
@@ -45,39 +47,95 @@ const SellerSidebar = ({ open, onClose }) => {
     };
 
     const drawerContent = (
-        <div>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Toolbar /> {/* Spacer for Navbar */}
             <Divider />
-            <Box sx={{ overflow: 'auto' }}>
-                <List>
-                    {menuItems.map((item) => (
-                        <ListItem
-                            button
-                            key={item.text}
-                            onClick={() => {
-                                navigate(item.path);
-                                if (onClose) onClose(); // Close drawer on mobile selection
-                            }}
-                            selected={location.pathname === item.path}
-                        >
-                            <ListItemIcon>
-                                {item.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={item.text} />
-                        </ListItem>
-                    ))}
+            <Box sx={{ flexGrow: 1, overflow: 'auto', py: 2, px: 1.5 }}>
+                <List sx={{ pt: 0 }}>
+                    {menuItems.map((item) => {
+                        const isActive = location.pathname === item.path;
+                        return (
+                            <ListItem
+                                button
+                                key={item.text}
+                                onClick={() => {
+                                    navigate(item.path);
+                                    if (onClose) onClose(); // Close drawer on mobile selection
+                                }}
+                                selected={isActive}
+                                sx={{
+                                    borderRadius: '12px',
+                                    mb: 1,
+                                    py: 1.2,
+                                    px: 2,
+                                    '&.Mui-selected': {
+                                        bgcolor: 'rgba(0, 23, 66, 0.08)',
+                                        color: 'primary.main',
+                                        borderLeft: '4px solid',
+                                        borderLeftColor: 'secondary.main',
+                                        borderRadius: '0 12px 12px 0',
+                                        '& .MuiListItemIcon-root': {
+                                            color: 'primary.main',
+                                        },
+                                        '&:hover': {
+                                            bgcolor: 'rgba(0, 23, 66, 0.12)',
+                                        },
+                                    },
+                                    '&:hover': {
+                                        bgcolor: 'rgba(0, 23, 66, 0.05)',
+                                    }
+                                }}
+                            >
+                                <ListItemIcon sx={{ minWidth: 40, color: isActive ? 'primary.main' : 'text.secondary' }}>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={item.text}
+                                    primaryTypographyProps={{
+                                        fontWeight: isActive ? 600 : 500,
+                                        fontSize: '0.925rem',
+                                        letterSpacing: '0.3px'
+                                    }}
+                                />
+                            </ListItem>
+                        );
+                    })}
                 </List>
-                <Divider />
-                <List>
-                    <ListItem button onClick={handleLogout}>
-                        <ListItemIcon>
+            </Box>
+
+            <Divider sx={{ mx: 2 }} />
+
+            <Box sx={{ p: 2 }}>
+                <List sx={{ pb: 0 }}>
+                    <ListItem
+                        button
+                        onClick={handleLogout}
+                        sx={{
+                            borderRadius: '12px',
+                            py: 1.2,
+                            px: 2,
+                            '&:hover': {
+                                bgcolor: 'rgba(211, 47, 47, 0.05)',
+                                color: 'error.main',
+                                '& .MuiListItemIcon-root': { color: 'error.main' }
+                            }
+                        }}
+                    >
+                        <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
                             <LogoutIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Logout" />
+                        <ListItemText
+                            primary="Logout"
+                            primaryTypographyProps={{
+                                fontSize: '0.925rem',
+                                fontWeight: 500,
+                                letterSpacing: '0.3px'
+                            }}
+                        />
                     </ListItem>
                 </List>
             </Box>
-        </div>
+        </Box>
     );
 
     return (
@@ -90,10 +148,15 @@ const SellerSidebar = ({ open, onClose }) => {
                 variant="temporary"
                 open={open}
                 onClose={onClose}
-                ModalProps={{ keepMounted: true }} // Better open performance on mobile.
+                ModalProps={{ keepMounted: true }}
                 sx={{
                     display: { xs: 'block', sm: 'none' },
-                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                    '& .MuiDrawer-paper': {
+                        boxSizing: 'border-box',
+                        width: drawerWidth,
+                        borderRight: '1px solid #eee',
+                        boxShadow: '4px 0 10px rgba(0,0,0,0.05)'
+                    },
                 }}
             >
                 {drawerContent}
@@ -104,7 +167,11 @@ const SellerSidebar = ({ open, onClose }) => {
                 variant="permanent"
                 sx={{
                     display: { xs: 'none', sm: 'block' },
-                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                    '& .MuiDrawer-paper': {
+                        boxSizing: 'border-box',
+                        width: drawerWidth,
+                        borderRight: '1px solid #eee'
+                    },
                 }}
                 open
             >

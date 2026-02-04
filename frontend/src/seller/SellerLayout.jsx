@@ -32,7 +32,9 @@ const SellerLayout = () => {
                 sx={{
                     flexGrow: 1,
                     p: 3,
-                    width: { sm: `calc(100% - ${drawerWidth}px)` }
+                    width: { sm: `calc(100% - ${drawerWidth}px)` },
+                    bgcolor: 'background.default',
+                    minHeight: '100vh'
                 }}
             >
                 <Toolbar /> {/* Spacer for the fixed AppBar */}

@@ -45,7 +45,7 @@ const PaymentCard = ({ title, amount, icon, color, buttonText }) => (
                 <Button
                     variant="contained"
                     fullWidth
-                    sx={{ mt: 2, bgcolor: color, '&:hover': { bgcolor: color } }}
+                    sx={{ mt: 2, bgcolor: color, '&:hover': { bgcolor: color, opacity: 0.9 } }}
                 >
                     {buttonText}
                 </Button>
@@ -87,7 +87,7 @@ const SellerPayments = () => {
                         title="Available for Withdrawal"
                         amount="$3,450.00"
                         icon={<AccountBalanceWallet />}
-                        color="#2e7d32"
+                        color="success.main"
                         buttonText="Withdraw Funds"
                     />
                 </Grid>
@@ -96,7 +96,7 @@ const SellerPayments = () => {
                         title="Pending Clearance"
                         amount="$1,280.50"
                         icon={<PendingActions />}
-                        color="#ed6c02"
+                        color="warning.main"
                     />
                 </Grid>
                 <Grid item xs={12} md={4}>
@@ -104,7 +104,7 @@ const SellerPayments = () => {
                         title="Total Earnings"
                         amount="$45,231.89"
                         icon={<AttachMoney />}
-                        color="#1976d2"
+                        color="primary.main"
                     />
                 </Grid>
             </Grid>

@@ -117,8 +117,8 @@ const SellerProducts = () => {
                     onClick={() => navigate('/seller/add-product')}
                     sx={{
                         textTransform: 'none',
-                        bgcolor: '#001742',
-                        '&:hover': { bgcolor: '#001742ee' }
+                        bgcolor: 'primary.main',
+                        '&:hover': { bgcolor: 'primary.dark' }
                     }}
                 >
                     Add Product
@@ -144,7 +144,7 @@ const SellerProducts = () => {
                 <Button
                     variant="outlined"
                     startIcon={<FilterListIcon />}
-                    sx={{ textTransform: 'none', color: '#001742', borderColor: '#001742' }}
+                    sx={{ textTransform: 'none', color: 'primary.main', borderColor: 'primary.main' }}
                 >
                     Filters
                 </Button>

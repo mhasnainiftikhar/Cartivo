@@ -86,7 +86,7 @@ const SellerProfile = () => {
                         variant="contained"
                         startIcon={<EditIcon />}
                         onClick={() => setIsEditing(true)}
-                        sx={{ bgcolor: '#001742', '&:hover': { bgcolor: '#001742ee' } }}
+                        sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
                     >
                         Edit Profile
                     </Button>
@@ -99,7 +99,7 @@ const SellerProfile = () => {
                             variant="contained"
                             startIcon={<SaveIcon />}
                             onClick={handleSaveProfile}
-                            sx={{ bgcolor: '#001742', '&:hover': { bgcolor: '#001742ee' } }}
+                            sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
                         >
                             Save Changes
                         </Button>

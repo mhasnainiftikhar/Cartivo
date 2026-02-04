@@ -244,15 +244,19 @@ const Navbar = () => {
                         {/* Seller Button */}
                         {!isMobile && (
                             <Button
+                                variant="outlined"
                                 onClick={() => navigate('/seller')}
                                 sx={{
                                     mr: 2,
-                                    color: '#001742',
+                                    color: 'primary.main',
+                                    borderColor: 'primary.main',
                                     fontWeight: 600,
                                     textTransform: 'none',
+                                    borderRadius: 8,
+                                    px: 2,
                                     '&:hover': {
-                                        backgroundColor: 'transparent',
-                                        color: theme.palette.primary.main,
+                                        bgcolor: 'rgba(0, 23, 66, 0.05)',
+                                        borderColor: 'primary.main',
                                     }
                                 }}
                             >

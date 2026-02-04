@@ -12,9 +12,10 @@ const SellerNavbar = ({ handleDrawerToggle }) => {
             sx={{
                 zIndex: (theme) => theme.zIndex.drawer + 1,
                 bgcolor: 'white',
-                color: '#001742',
-                boxShadow: 1, // Slight shadow for depth
-                borderBottom: '1px solid #eee'
+                color: 'primary.main',
+                boxShadow: 'none',
+                borderBottom: '1px solid #eee',
+                py: 0.5
             }}
         >
             <Toolbar>
@@ -30,22 +31,26 @@ const SellerNavbar = ({ handleDrawerToggle }) => {
 
                 {/* Logo */}
                 <Typography
-                    variant="h6"
+                    variant="h4"
                     noWrap
                     component="div"
                     sx={{
-                        fontWeight: 700,
-                        color: '#001742',
+                        fontWeight: 400,
+                        color: 'primary.main',
                         cursor: 'pointer',
                         letterSpacing: '1px',
                         display: 'flex',
                         alignItems: 'center',
-                        mr: 4,
-                        fontFamily: '"Playwrite NZ Basic"' // Matching client side if possible, or fallback
+                        textDecoration: 'none',
+                        fontFamily: '"Playwrite NZ Basic"',
+                        fontSize: { xs: '1.5rem', md: '2rem' }
                     }}
                     onClick={() => navigate('/seller/dashboard')}
                 >
-                    Cartivo Seller
+                    Cartivo<span style={{ color: '#2563eb' }}>.</span>
+                    <Typography component="span" sx={{ ml: 1, fontSize: '0.9rem', fontWeight: 600, color: 'text.secondary', verticalAlign: 'middle', mt: 1.5 }}>
+                        Seller
+                    </Typography>
                 </Typography>
 
                 <Box sx={{ flexGrow: 1 }} />
@@ -55,11 +60,13 @@ const SellerNavbar = ({ handleDrawerToggle }) => {
                     onClick={() => navigate('/')}
                     sx={{
                         textTransform: 'none',
-                        borderColor: '#001742',
-                        color: '#001742',
+                        borderColor: 'primary.main',
+                        color: 'primary.main',
                         fontWeight: 600,
+                        borderRadius: 8,
+                        px: 3,
                         '&:hover': {
-                            borderColor: '#001742',
+                            borderColor: 'primary.main',
                             bgcolor: 'rgba(0, 23, 66, 0.05)'
                         }
                     }}

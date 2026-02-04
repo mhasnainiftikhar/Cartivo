@@ -142,8 +142,8 @@ const OrderCard = ({ order }) => {
                     sx={{
                         textTransform: 'none',
                         borderRadius: 2,
-                        bgcolor: '#001742',
-                        '&:hover': { bgcolor: '#001742ee' }
+                        bgcolor: 'primary.main',
+                        '&:hover': { bgcolor: 'primary.dark' }
                     }}
                 >
                     View Details

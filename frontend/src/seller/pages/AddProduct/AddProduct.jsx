@@ -88,7 +88,7 @@ const AddProduct = () => {
                         type="submit"
                         variant="contained"
                         startIcon={<SaveIcon />}
-                        sx={{ bgcolor: '#001742', '&:hover': { bgcolor: '#001742ee' } }}
+                        sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
                     >
                         Publish Product
                     </Button>
