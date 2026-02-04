@@ -32,11 +32,12 @@ import AddProduct from './seller/pages/AddProduct/AddProduct'
 import SellerPayments from './seller/pages/Payment/SellerPayments'
 import SellerTransactions from './seller/pages/Transactions/SellerTransactions'
 import SellerProfile from './seller/pages/Profile/SellerProfile'
+import BecomeSeller from './customer/pages/BecomeSeller/BecomeSeller'
 
 const App = () => {
   const location = useLocation();
-  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname.startsWith('/seller');
-  const hideFooter = location.pathname === '/login' || location.pathname === '/signup' || location.pathname.startsWith('/seller');
+  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller');
+  const hideFooter = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -54,6 +55,7 @@ const App = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/become-seller" element={<BecomeSeller />} />
 
         {/* Informational Routes */}
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
