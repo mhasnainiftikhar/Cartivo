@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Config/api";
+import { showAlert } from "./AlertSlice";
 
 export const getWishlist = createAsyncThunk("wishlist/getWishlist", async (_, { rejectWithValue }) => {
     try {
@@ -10,20 +11,24 @@ export const getWishlist = createAsyncThunk("wishlist/getWishlist", async (_, { 
     }
 });
 
-export const addProductToWishlist = createAsyncThunk("wishlist/addProductToWishlist", async (productId, { rejectWithValue }) => {
+export const addProductToWishlist = createAsyncThunk("wishlist/addProductToWishlist", async (productId, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.post("/api/wishlist/add", { productId });
+        dispatch(showAlert({ message: "Product added to wishlist", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Failed to add to wishlist", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });
 
-export const removeProductFromWishlist = createAsyncThunk("wishlist/removeProductFromWishlist", async (productId, { rejectWithValue }) => {
+export const removeProductFromWishlist = createAsyncThunk("wishlist/removeProductFromWishlist", async (productId, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.delete(`/api/wishlist/remove/${productId}`);
+        dispatch(showAlert({ message: "Product removed from wishlist", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Failed to remove from wishlist", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });

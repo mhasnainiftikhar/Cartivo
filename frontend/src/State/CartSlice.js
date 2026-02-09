@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Config/api";
+import { showAlert } from "./AlertSlice";
 
 export const fetchCart = createAsyncThunk("cart/fetchCart", async (_, { rejectWithValue }) => {
     try {
@@ -10,29 +11,35 @@ export const fetchCart = createAsyncThunk("cart/fetchCart", async (_, { rejectWi
     }
 });
 
-export const addItemToCart = createAsyncThunk("cart/addItemToCart", async (reqData, { rejectWithValue }) => {
+export const addItemToCart = createAsyncThunk("cart/addItemToCart", async (reqData, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.put("/api/cart/add", reqData);
+        dispatch(showAlert({ message: "Item added to cart", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Failed to add item", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });
 
-export const removeCartItem = createAsyncThunk("cart/removeCartItem", async (cartItemId, { rejectWithValue }) => {
+export const removeCartItem = createAsyncThunk("cart/removeCartItem", async (cartItemId, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.delete(`/api/cart-item/${cartItemId}`);
+        dispatch(showAlert({ message: "Item removed from cart", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Failed to remove item", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });
 
-export const updateCartItem = createAsyncThunk("cart/updateCartItem", async ({ cartItemId, quantity }, { rejectWithValue }) => {
+export const updateCartItem = createAsyncThunk("cart/updateCartItem", async ({ cartItemId, quantity }, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.patch(`/api/cart-item/${cartItemId}`, { quantity });
+        dispatch(showAlert({ message: "Cart updated", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Failed to update cart", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });

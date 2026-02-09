@@ -1,11 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Config/api";
+import { showAlert } from "./AlertSlice";
 
-export const createOrder = createAsyncThunk("order/createOrder", async (shippingAddress, { rejectWithValue }) => {
+export const createOrder = createAsyncThunk("order/createOrder", async (shippingAddress, { dispatch, rejectWithValue }) => {
     try {
-        const response = await api.post("/api/orders", { shippingAddress });
+        const response = await api.post("/api/orders", shippingAddress); // backend usually expects address object
+        dispatch(showAlert({ message: "Order placed successfully", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Order creation failed", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });

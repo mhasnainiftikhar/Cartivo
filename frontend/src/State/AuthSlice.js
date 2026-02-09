@@ -1,35 +1,43 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Config/api";
+import { showAlert } from "./AlertSlice";
 
-export const login = createAsyncThunk("auth/login", async (userData, { rejectWithValue }) => {
+export const login = createAsyncThunk("auth/login", async (userData, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.post("/api/auth/login", userData);
         if (response.data.token) {
             localStorage.setItem("jwt", response.data.token);
         }
+        dispatch(showAlert({ message: "Login Successful", severity: "success" }));
         return response.data;
     } catch (error) {
+        const errorMessage = error.response?.data?.message || "Login Failed";
+        dispatch(showAlert({ message: errorMessage, severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });
 
-export const sendSignupOtp = createAsyncThunk("auth/sendSignupOtp", async (email, { rejectWithValue }) => {
+export const sendSignupOtp = createAsyncThunk("auth/sendSignupOtp", async (email, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.post("/api/auth/signup/otp", { email });
+        dispatch(showAlert({ message: "OTP sent to your email", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Failed to send OTP", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });
 
-export const register = createAsyncThunk("auth/register", async (userData, { rejectWithValue }) => {
+export const register = createAsyncThunk("auth/register", async (userData, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.post("/api/auth/signup", userData);
         if (response.data.token) {
             localStorage.setItem("jwt", response.data.token);
         }
+        dispatch(showAlert({ message: "Account created successfully", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Registration failed", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });
@@ -47,20 +55,24 @@ export const getUserProfile = createAsyncThunk("auth/getUserProfile", async (jwt
     }
 });
 
-export const updateUserProfile = createAsyncThunk("auth/updateUserProfile", async (userData, { rejectWithValue }) => {
+export const updateUserProfile = createAsyncThunk("auth/updateUserProfile", async (userData, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.patch("/api/users/profile", userData);
+        dispatch(showAlert({ message: "Profile updated successfully", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Profile update failed", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });
 
-export const addUserAddress = createAsyncThunk("auth/addUserAddress", async (addressData, { rejectWithValue }) => {
+export const addUserAddress = createAsyncThunk("auth/addUserAddress", async (addressData, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.post("/api/users/addresses", addressData);
+        dispatch(showAlert({ message: "Address added successfully", severity: "success" }));
         return response.data;
     } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Failed to add address", severity: "error" }));
         return rejectWithValue(error.response.data);
     }
 });
@@ -81,6 +93,9 @@ const authSlice = createSlice({
             state.user = null;
             state.jwt = null;
             localStorage.removeItem("jwt");
+            // Note: In Redux Toolkit, we can't directly dispatch from a reducer, 
+            // but we can handle it in the component or use a listener.
+            // For simplicity, I'll add a toast in the component where logout is called.
         },
     },
     extraReducers: (builder) => {

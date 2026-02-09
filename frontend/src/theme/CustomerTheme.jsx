@@ -29,5 +29,39 @@ export const CustomerTheme = createTheme({
     },
     shape: {
         borderRadius: 8
-    }
-})
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    borderRadius: '12px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    padding: '10px 24px',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+                    },
+                    '&:active': {
+                        transform: 'translateY(0)',
+                    },
+                },
+                containedPrimary: {
+                    background: 'linear-gradient(45deg, #001742 30%, #002a7a 90%)',
+                },
+            },
+        },
+        MuiIconButton: {
+            styleOverrides: {
+                root: {
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                        backgroundColor: 'rgba(0, 23, 66, 0.04)',
+                        transform: 'scale(1.1)',
+                    },
+                },
+            },
+        },
+    },
+});

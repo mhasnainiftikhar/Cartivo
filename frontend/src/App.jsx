@@ -45,6 +45,7 @@ import AdminDashboard from './admin/pages/Dashboard/AdminDashboard'
 import AdminCoupons from './admin/pages/Coupons/AdminCoupons'
 import AddCoupon from './admin/pages/AddCoupon/AddCoupon'
 import AdminPlaceholder from './admin/pages/AdminPlaceholder.jsx'
+import AlertComponent from './customer/components/Alert/AlertComponent'
 
 const App = () => {
   const location = useLocation();
@@ -68,6 +69,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={CustomerTheme}>
+      <AlertComponent />
       {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />

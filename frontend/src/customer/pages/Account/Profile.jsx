@@ -31,6 +31,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout, updateUserProfile, addUserAddress } from '../../../State/AuthSlice';
 import { useNavigate } from 'react-router-dom';
 import { userOrderHistory } from '../../../State/OrderSlice';
+import { showAlert } from '../../../State/AlertSlice';
 
 const modalStyle = {
     position: 'absolute',
@@ -84,6 +85,7 @@ const Profile = () => {
 
     const handleLogout = () => {
         dispatch(logout());
+        dispatch(showAlert({ message: "Logout Successful", severity: "success" }));
         navigate("/");
     };
 

@@ -1,2 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Playwrite+NZ+Basic:wght@100..400&family=Montserrat:wght@100..900&display=swap');
 @import "tailwindcss";
+
+@layer base {
+  button, 
+  [role="button"],
+  .cursor-pointer {
+    cursor: pointer !important;
+  }
+
+  .interactive-hover {
+    transition: all 0.3s ease-in-out;
+  }
+
+  .interactive-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+}
