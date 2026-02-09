@@ -33,9 +33,9 @@ const ProductDetails = () => {
     const dispatch = useDispatch();
     const { auth, wishlist, product } = useSelector(store => store);
 
-    const [selectedImage, setSelectedImage] = useState("");
+    const [selectedImage, setSelectedImage] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [selectedSize, setSelectedSize] = useState("");
+    const [selectedSize, setSelectedSize] = useState("M");
 
     useEffect(() => {
         dispatch(findProductById(id));
@@ -43,7 +43,12 @@ const ProductDetails = () => {
 
     useEffect(() => {
         if (product.product) {
-            setSelectedImage(product.product.images[0]);
+            const images = product.product.images || [];
+            const firstImage = Array.isArray(images) && images.length > 0
+                ? (images[0]?.url || images[0])
+                : (typeof images === 'string' ? images : (product.product.image || 'https://placehold.co/600?text=No+Image'));
+
+            setSelectedImage(firstImage);
             setSelectedSize(product.product.size || "M");
         }
     }, [product.product]);
@@ -52,7 +57,7 @@ const ProductDetails = () => {
 
     const handleAddToCart = () => {
         if (!auth.user) {
-            navigate("/login");
+            navigate("/signin");
             return;
         }
         const data = {
@@ -65,7 +70,7 @@ const ProductDetails = () => {
 
     const handleWishlist = () => {
         if (!auth.user) {
-            navigate("/login");
+            navigate("/signin");
             return;
         }
         if (isWishlisted) {
@@ -113,24 +118,42 @@ const ProductDetails = () => {
                         <Grid item xs={12} lg={6}>
                             <div className="space-y-6">
                                 {/* Main Image */}
-                                <div className="aspect-square rounded-[32px] overflow-hidden bg-gray-50 border border-gray-100 p-8">
-                                    <img
-                                        src={selectedImage}
-                                        alt={p.title}
-                                        className="w-full h-full object-contain"
-                                    />
+                                <div className="aspect-square rounded-[32px] overflow-hidden bg-gray-50 border border-gray-100">
+                                    {selectedImage && (
+                                        <img
+                                            src={selectedImage}
+                                            alt={p.title}
+                                            className="w-full h-full object-contain"
+                                            onError={() => {
+                                                if (selectedImage !== 'https://placehold.co/600?text=Error') {
+                                                    setSelectedImage('https://placehold.co/600?text=Error');
+                                                }
+                                            }}
+                                        />
+                                    )}
                                 </div>
                                 {/* Thumbnails */}
                                 <div className="flex gap-4">
-                                    {p.images?.map((img, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => setSelectedImage(img)}
-                                            className={`w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all p-2 bg-gray-50 ${selectedImage === img ? 'border-blue-600 shadow-lg shadow-blue-500/10' : 'border-transparent'}`}
-                                        >
-                                            <img src={img} alt="" className="w-full h-full object-contain" />
-                                        </button>
-                                    ))}
+                                    {Array.isArray(p.images) && p.images.map((img, index) => {
+                                        const src = img?.url || img;
+                                        return (
+                                            <button
+                                                key={index}
+                                                onClick={() => setSelectedImage(src)}
+                                                className={`w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all bg-gray-50 ${selectedImage === src ? 'border-blue-600 shadow-lg shadow-blue-500/10' : 'border-transparent'}`}
+                                            >
+                                                <img
+                                                    src={src}
+                                                    alt=""
+                                                    className="w-full h-full object-contain"
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = 'https://placehold.co/100?text=Error';
+                                                    }}
+                                                />
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </Grid>

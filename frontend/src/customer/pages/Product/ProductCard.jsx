@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { addProductToWishlist, removeProductFromWishlist } from '../../../State/WishlistSlice';
@@ -8,13 +9,26 @@ const ProductCard = ({ product }) => {
     const dispatch = useDispatch();
     const { auth, wishlist } = useSelector(store => store);
 
+    const title = product.title || product.name;
+    const images = product.images || [];
+    const initialImage = Array.isArray(images) && images.length > 0
+        ? (images[0]?.url || images[0])
+        : (typeof images === 'string' ? images : (product.image || 'https://placehold.co/300?text=No+Image'));
+
+    const [currentImage, setCurrentImage] = React.useState(initialImage);
+
+    // Update image if product identity changes
+    React.useEffect(() => {
+        setCurrentImage(initialImage);
+    }, [product._id, product.id, initialImage]);
+
     const isWishlisted = wishlist.wishlist?.products?.some(p => p._id === product.id || p._id === product._id);
 
     const handleWishlist = (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (!auth.user) {
-            navigate("/login");
+            navigate("/signin");
             return;
         }
         if (isWishlisted) {
@@ -28,7 +42,7 @@ const ProductCard = ({ product }) => {
         e.preventDefault();
         e.stopPropagation();
         if (!auth.user) {
-            navigate("/login");
+            navigate("/signin");
             return;
         }
         const data = {
@@ -39,11 +53,9 @@ const ProductCard = ({ product }) => {
         dispatch(addItemToCart(data));
     };
 
-    const title = product.title || product.name;
-    const image = product.images?.[0] || product.image;
-    const sellingPrice = product.sellingPrice || product.price;
-    const mrpPrice = product.mrpPrice || (product.price / (1 - (product.discount || 0) / 100));
-    const discount = product.discountPercentage || product.discount;
+    const sellingPrice = product.sellingPrice || product.price || 0;
+    const mrpPrice = product.mrpPrice || (product.price ? (product.price / (1 - (product.discount || 0) / 100)) : 0);
+    const discount = product.discountPercentage || product.discount || 0;
 
     return (
         <Link to={`/product/${product.id || product._id}`} className='group cursor-pointer bg-white rounded-3xl p-4 border border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 block no-underline text-inherit'>
@@ -51,9 +63,14 @@ const ProductCard = ({ product }) => {
             <div className='relative aspect-square overflow-hidden rounded-2xl bg-gray-50 mb-6'>
                 <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
                 <img
-                    src={image}
+                    src={currentImage}
                     alt={title}
-                    className='w-full h-full object-contain transition-transform duration-700 group-hover:scale-110 p-4'
+                    className='w-full h-full object-contain transition-transform duration-700 group-hover:scale-110'
+                    onError={() => {
+                        if (currentImage !== 'https://placehold.co/300?text=Error') {
+                            setCurrentImage('https://placehold.co/300?text=Error');
+                        }
+                    }}
                 />
 
                 {/* Wishlist Icon */}

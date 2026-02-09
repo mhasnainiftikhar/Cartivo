@@ -16,7 +16,13 @@ class WishlistService {
 
     async addProductToWishlist(userId, productId) {
         const wishlist = await this.getWishlistByUserId(userId);
-        if (!wishlist.products.some(p => p._id.toString() === productId)) {
+        const isPresent = wishlist.products.some(p => {
+            if (!p) return false;
+            const id = p._id ? p._id.toString() : p.toString();
+            return id === productId;
+        });
+
+        if (!isPresent) {
             wishlist.products.push(productId);
             await wishlist.save();
         }
@@ -25,7 +31,11 @@ class WishlistService {
 
     async removeProductFromWishlist(userId, productId) {
         const wishlist = await this.getWishlistByUserId(userId);
-        wishlist.products = wishlist.products.filter(p => p._id.toString() !== productId);
+        wishlist.products = wishlist.products.filter(p => {
+            if (!p) return false;
+            const id = p._id ? p._id.toString() : p.toString();
+            return id !== productId;
+        });
         await wishlist.save();
         return await wishlist.populate("products");
     }

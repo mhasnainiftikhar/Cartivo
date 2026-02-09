@@ -10,7 +10,7 @@ import { getWishlist } from './State/WishlistSlice'
 import Home from './customer/pages/Home'
 import Product from './customer/pages/Product/Product'
 import Navbar from './customer/components/Navbar/Navbar'
-import Login from './customer/pages/Auth/Login'
+import Signin from './customer/pages/Auth/Signin'
 import Signup from './customer/pages/Auth/Signup'
 import Cart from './customer/pages/Cart/Cart'
 import Wishlist from './customer/pages/Wishlist/Wishlist'
@@ -69,14 +69,14 @@ const App = () => {
     }
   }, [seller.sellerJwt, dispatch]);
 
-  const hideNavbar = location.pathname === '/login' ||
+  const hideNavbar = location.pathname === '/signin' ||
     location.pathname === '/signup' ||
     location.pathname === '/become-seller' ||
     location.pathname === '/seller-login' ||
     location.pathname.startsWith('/seller') ||
     location.pathname.startsWith('/admin');
 
-  const hideFooter = location.pathname === '/login' ||
+  const hideFooter = location.pathname === '/signin' ||
     location.pathname === '/signup' ||
     location.pathname === '/become-seller' ||
     location.pathname === '/seller-login' ||
@@ -99,8 +99,9 @@ const App = () => {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/account" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Navigate to="/signin" replace />} />
         <Route path="/become-seller" element={<BecomeSeller />} />
         <Route path="/seller-login" element={<SellerLogin />} />
 

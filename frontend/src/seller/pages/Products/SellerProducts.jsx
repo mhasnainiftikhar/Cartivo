@@ -194,7 +194,15 @@ const SellerProducts = () => {
                             >
                                 <TableCell component="th" scope="row">
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                        <Avatar variant="rounded" src={p.images[0]} alt={p.title} />
+                                        <Avatar
+                                            variant="rounded"
+                                            src={Array.isArray(p.images) ? (p.images[0]?.url || p.images[0]) : (typeof p.images === 'string' ? p.images : p.image)}
+                                            alt={p.title}
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = 'https://placehold.co/50?text=err';
+                                            }}
+                                        />
                                         <Typography variant="body2" fontWeight="500">
                                             {p.title}
                                         </Typography>

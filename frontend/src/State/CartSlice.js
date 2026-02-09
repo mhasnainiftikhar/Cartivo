@@ -14,6 +14,7 @@ export const fetchCart = createAsyncThunk("cart/fetchCart", async (_, { rejectWi
 export const addItemToCart = createAsyncThunk("cart/addItemToCart", async (reqData, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.put("/api/cart/add", reqData);
+        dispatch(fetchCart());
         dispatch(showAlert({ message: "Item added to cart", severity: "success" }));
         return response.data;
     } catch (error) {

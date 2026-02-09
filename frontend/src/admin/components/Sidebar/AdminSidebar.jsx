@@ -49,7 +49,6 @@ const AdminSidebar = ({ open, onClose, mobile }) => {
                         const isActive = location.pathname === item.path;
                         return (
                             <ListItem
-                                button
                                 key={item.text}
                                 onClick={() => {
                                     navigate(item.path);
@@ -98,8 +97,7 @@ const AdminSidebar = ({ open, onClose, mobile }) => {
             <Divider />
             <Box sx={{ p: 2 }}>
                 <ListItem
-                    button
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate('/signin')}
                     sx={{
                         borderRadius: '12px',
                         py: 1.5,

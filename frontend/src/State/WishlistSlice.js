@@ -14,6 +14,7 @@ export const getWishlist = createAsyncThunk("wishlist/getWishlist", async (_, { 
 export const addProductToWishlist = createAsyncThunk("wishlist/addProductToWishlist", async (productId, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.post("/api/wishlist/add", { productId });
+        dispatch(getWishlist());
         dispatch(showAlert({ message: "Product added to wishlist", severity: "success" }));
         return response.data;
     } catch (error) {
@@ -25,6 +26,7 @@ export const addProductToWishlist = createAsyncThunk("wishlist/addProductToWishl
 export const removeProductFromWishlist = createAsyncThunk("wishlist/removeProductFromWishlist", async (productId, { dispatch, rejectWithValue }) => {
     try {
         const response = await api.delete(`/api/wishlist/remove/${productId}`);
+        dispatch(getWishlist());
         dispatch(showAlert({ message: "Product removed from wishlist", severity: "success" }));
         return response.data;
     } catch (error) {

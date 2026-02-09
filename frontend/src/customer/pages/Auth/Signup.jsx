@@ -192,7 +192,7 @@ const Signup = () => {
 
                         <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>
                             Already have an account?{' '}
-                            <Link component={RouterLink} to="/login" sx={{ fontWeight: 700, color: '#2563eb', textDecoration: 'none' }}>
+                            <Link component={RouterLink} to="/signin" sx={{ fontWeight: 700, color: '#2563eb', textDecoration: 'none' }}>
                                 Sign In
                             </Link>
                         </Typography>

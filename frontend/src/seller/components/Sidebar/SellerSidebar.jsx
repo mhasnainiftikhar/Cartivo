@@ -58,7 +58,6 @@ const SellerSidebar = ({ open, onClose }) => {
                         const isActive = location.pathname === item.path;
                         return (
                             <ListItem
-                                button
                                 key={item.text}
                                 onClick={() => {
                                     navigate(item.path);
@@ -110,7 +109,6 @@ const SellerSidebar = ({ open, onClose }) => {
             <Box sx={{ p: 2 }}>
                 <List sx={{ pb: 0 }}>
                     <ListItem
-                        button
                         onClick={handleLogout}
                         sx={{
                             borderRadius: '12px',

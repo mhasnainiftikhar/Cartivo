@@ -42,7 +42,7 @@ const Footer = () => {
                 { label: 'All Products', path: '/products' },
                 { label: 'My Cart', path: '/cart' },
                 { label: 'Wishlist', path: '/wishlist' },
-                { label: 'My Account', path: '/login' },
+                { label: 'My Account', path: '/signin' },
             ],
         },
         {

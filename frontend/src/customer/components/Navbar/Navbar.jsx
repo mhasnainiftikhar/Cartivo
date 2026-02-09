@@ -169,7 +169,7 @@ const Navbar = () => {
             </Box>
             <List>
                 {categories.map((item) => (
-                    <ListItem button key={item} onClick={() => handleCategoryClick(item)}>
+                    <ListItem key={item} onClick={() => handleCategoryClick(item)} sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'rgba(0,0,0,0.04)' } }}>
                         <ListItemText primary={item} sx={{ color: '#001742', fontWeight: 600 }} />
                     </ListItem>
                 ))}
@@ -328,7 +328,6 @@ const Navbar = () => {
                                             Become Seller
                                         </Button>
                                     )}
-                                    )}
                                 </Box>
                             )}
 
@@ -353,7 +352,7 @@ const Navbar = () => {
                                     <>
                                         <Tooltip title={auth.user ? "Account" : "Login"}>
                                             <IconButton
-                                                onClick={() => navigate(auth.user ? '/account' : '/login')}
+                                                onClick={() => navigate(auth.user ? '/account' : '/signin')}
                                                 sx={{
                                                     color: '#001742',
                                                     p: auth.user ? 0.5 : 1

@@ -1,18 +1,12 @@
+import React, { useEffect } from 'react'
 import Hero from './Home/Hero'
 import BecomeSeller from './Home/BecomeSeller'
 import ProductCarousel from '../components/ProductCarousel/ProductCarousel'
 import CategoryGrid from '../components/CategoryGrid/CategoryGrid'
 import Deal from './Deals/Deal'
 import { Grid, Box, Typography } from '@mui/material'
-
-const mockProducts = [
-  { title: "Premium Wireless Headset", mrpPrice: 350, sellingPrice: 299, discountPercentage: 15, brand: "AudioTech", images: ["https://m.media-amazon.com/images/I/41XjE57VLvL._AC_UY327_FMwebp_QL65_.jpg"] },
-  { title: "Smart Watch Ultra", mrpPrice: 550, sellingPrice: 499, discountPercentage: 10, brand: "Wristly", images: ["https://m.media-amazon.com/images/I/61afO93SRXL._AC_UL480_FMwebp_QL65_.jpg"] },
-  { title: "Pro Series Camera", mrpPrice: 1600, sellingPrice: 1299, discountPercentage: 20, brand: "Capture", images: ["https://m.media-amazon.com/images/I/714hINuPoBL._AC_UY327_FMwebp_QL65_.jpg"] },
-  { title: "Slim Laptop Pro", mrpPrice: 1600, sellingPrice: 1499, discountPercentage: 5, brand: "Techy", images: ["https://m.media-amazon.com/images/I/71jQbkYw5KL._AC_UY327_FMwebp_QL65_.jpg"] },
-  { title: "Noise Cancelling Buds", mrpPrice: 199, sellingPrice: 199, discountPercentage: 0, brand: "AudioTech", images: ["https://m.media-amazon.com/images/I/41XjE57VLvL._AC_UY327_FMwebp_QL65_.jpg"] },
-  { title: "Portable Speaker Plus", mrpPrice: 200, sellingPrice: 149, discountPercentage: 25, brand: "SoundBox", images: ["https://m.media-amazon.com/images/I/81l7mB5LhsL._AC_UY327_FMwebp_QL65_.jpg"] },
-];
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchProducts } from '../../State/ProductSlice'
 
 const homeCategories = [
   { name: "Kitchen", image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=200" },
@@ -29,6 +23,13 @@ const fashionCategories = [
 ];
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const { products, loading } = useSelector(store => store.product);
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
   return (
     <div className='bg-gray-50 min-h-screen'>
       <Hero />
@@ -59,11 +60,15 @@ const Home = () => {
 
       <div className='py-10'>
         <section>
-          <ProductCarousel title="Curated for You" products={mockProducts} />
+          {!loading && products && products.length > 0 && (
+            <ProductCarousel title="Curated for You" products={products} />
+          )}
         </section>
 
         <section className='mt-10'>
-          <ProductCarousel title="Best Sellers in Electronics" products={[...mockProducts].reverse()} />
+          {!loading && products && products.length > 0 && (
+            <ProductCarousel title="Best Sellers in Electronics" products={[...products].reverse()} />
+          )}
         </section>
 
         <section className='px-5 lg:px-10 mt-16 mb-20'>

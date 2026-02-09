@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../../State/AuthSlice';
 import { useEffect } from 'react';
 
-const Login = () => {
+const Signin = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { auth } = useSelector(store => store);
@@ -79,7 +79,7 @@ const Login = () => {
             }}>
                 <Box sx={{ maxWidth: '450px', width: '100%', mx: 'auto' }}>
                     <Typography variant="h4" sx={{ fontWeight: 800, mb: 1, color: '#001742' }}>
-                        Login to <span style={{ fontFamily: '"Playwrite NZ Basic"', fontWeight: 400 }}>Cartivo</span>
+                        Sign In to <span style={{ fontFamily: '"Playwrite NZ Basic"', fontWeight: 400 }}>Cartivo</span>
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'text.secondary', mb: 4 }}>
                         Enter your credentials to access your account.
@@ -137,6 +137,13 @@ const Login = () => {
                         </Button>
 
                         <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary', mt: 2 }}>
+                            Don't have an account?{' '}
+                            <Link component={RouterLink} to="/signup" sx={{ fontWeight: 700, color: '#febd69', textDecoration: 'none' }}>
+                                Sign Up
+                            </Link>
+                        </Typography>
+
+                        <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary', mt: 1 }}>
                             Are you a seller?{' '}
                             <Link component={RouterLink} to="/seller-login" sx={{ fontWeight: 700, color: '#febd69', textDecoration: 'none' }}>
                                 Seller Login
@@ -149,4 +156,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signin;

@@ -121,7 +121,7 @@ const Profile = () => {
         return (
             <Box sx={{ py: 10, textAlign: 'center' }}>
                 <Typography variant="h5">Please login to view your profile</Typography>
-                <Button variant="contained" onClick={() => navigate("/login")} sx={{ mt: 2 }}>Login</Button>
+                <Button variant="contained" onClick={() => navigate("/signin")} sx={{ mt: 2, bgcolor: '#001742' }}>Sign In</Button>
             </Box>
         );
     }
