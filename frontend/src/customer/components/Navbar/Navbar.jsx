@@ -22,11 +22,15 @@ import {
     FavoriteBorder as WishlistIcon,
     ShoppingCartOutlined as CartIcon,
     Menu as MenuIcon,
-    Close as CloseIcon
+    Close as CloseIcon,
+    Logout as LogoutIcon
 } from '@mui/icons-material';
+import { Avatar, Tooltip } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, MenuItem } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../../State/AuthSlice';
 
 const Search = styled('div', {
     shouldForwardProp: (prop) => prop !== 'expand',
@@ -120,6 +124,8 @@ const Navbar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const dispatch = useDispatch();
+    const { auth } = useSelector(store => store);
 
     const navigate = useNavigate();
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -325,9 +331,31 @@ const Navbar = () => {
                                         <SearchIcon />
                                     </IconButton>
                                 )}
-                                <IconButton onClick={() => navigate('/login')} sx={{ color: '#001742' }}>
-                                    <PersonIcon />
-                                </IconButton>
+                                <Tooltip title={auth.user ? "Account" : "Login"}>
+                                    <IconButton
+                                        onClick={() => navigate(auth.user ? '/account' : '/login')}
+                                        sx={{
+                                            color: '#001742',
+                                            p: auth.user ? 0.5 : 1
+                                        }}
+                                    >
+                                        {auth.user ? (
+                                            <Avatar
+                                                sx={{
+                                                    width: 32,
+                                                    height: 32,
+                                                    bgcolor: '#001742',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 700
+                                                }}
+                                            >
+                                                {auth.user.name?.charAt(0).toUpperCase()}
+                                            </Avatar>
+                                        ) : (
+                                            <PersonIcon />
+                                        )}
+                                    </IconButton>
+                                </Tooltip>
                                 <IconButton onClick={() => navigate('/wishlist')} sx={{ color: '#001742' }}>
                                     <Badge badgeContent={4} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
                                         <WishlistIcon />

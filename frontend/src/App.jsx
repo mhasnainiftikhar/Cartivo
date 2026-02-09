@@ -13,6 +13,7 @@ import Cart from './customer/pages/Cart/Cart'
 import Wishlist from './customer/pages/Wishlist/Wishlist'
 import ProductDetails from './customer/pages/ProductDetails/ProductDetails'
 import Checkout from './customer/pages/Checkout/Checkout'
+import Profile from './customer/pages/Account/Profile'
 import Footer from './customer/components/Footer/Footer'
 import TermsAndConditions from './customer/pages/Info/TermsAndConditions'
 import PrivacyPolicy from './customer/pages/Info/PrivacyPolicy'
@@ -71,6 +72,7 @@ const App = () => {
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/account" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/become-seller" element={<BecomeSeller />} />
