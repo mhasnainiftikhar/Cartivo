@@ -19,6 +19,30 @@ export const findProductById = createAsyncThunk("product/findProductById", async
     }
 });
 
+export const fetchSellerProducts = createAsyncThunk("product/fetchSellerProducts", async (jwt, { rejectWithValue }) => {
+    try {
+        const response = await api.get("/api/products/seller", {
+            headers: { Authorization: `Bearer ${jwt}` }
+        });
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
+export const deleteProduct = createAsyncThunk("product/deleteProduct", async ({ productId, jwt }, { dispatch, rejectWithValue }) => {
+    try {
+        const response = await api.delete(`/api/products/${productId}`, {
+            headers: { Authorization: `Bearer ${jwt}` }
+        });
+        dispatch(showAlert({ message: "Product deleted successfully", severity: "success" }));
+        return productId;
+    } catch (error) {
+        dispatch(showAlert({ message: "Failed to delete product", severity: "error" }));
+        return rejectWithValue(error.response.data);
+    }
+});
+
 
 const initialState = {
     products: [],
@@ -60,6 +84,22 @@ const productSlice = createSlice({
             .addCase(findProductById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(fetchSellerProducts.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchSellerProducts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.products = action.payload;
+            })
+            .addCase(fetchSellerProducts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(deleteProduct.fulfilled, (state, action) => {
+                state.loading = false;
+                state.products = state.products.filter(p => p._id !== action.payload);
             });
     },
 });

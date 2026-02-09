@@ -84,9 +84,22 @@ class SellerService {
     //update seller account
     async updateSeller(existingSeller, sellerData) {
         try {
-            
+
             delete sellerData.accountStatus;
             delete sellerData.role;
+
+            if (sellerData.password) {
+                sellerData.password = await hashPassword(sellerData.password);
+            }
+
+            if (sellerData.businessDetails) {
+                existingSeller.businessDetails = { ...existingSeller.businessDetails, ...sellerData.businessDetails };
+                delete sellerData.businessDetails;
+            }
+            if (sellerData.bankDetails) {
+                existingSeller.bankDetails = { ...existingSeller.bankDetails, ...sellerData.bankDetails };
+                delete sellerData.bankDetails;
+            }
 
             Object.assign(existingSeller, sellerData);
             const updatedSeller = await existingSeller.save();

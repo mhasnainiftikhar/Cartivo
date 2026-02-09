@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateSellerProfile, getSellerProfile } from '../../../State/SellerSlice';
 import {
     Box,
     Typography,
@@ -21,17 +23,27 @@ import {
 } from '@mui/icons-material';
 
 const SellerProfile = () => {
+    const dispatch = useDispatch();
+    const { seller } = useSelector(store => store);
+    const [isEditing, setIsEditing] = useState(false);
+
     const [profileData, setProfileData] = useState({
-        fullName: 'James Anderson',
-        email: 'james.anderson@example.com',
-        phone: '+1 (555) 123-4567',
-        businessName: 'Anderson Electronics',
-        businessDescription: 'Premium electronics seller specializing in headphones and smart devices.',
-        addressHost: '123 Market St',
-        city: 'San Francisco',
-        state: 'CA',
-        zipCode: '94103',
-        country: 'USA'
+        sellerName: '',
+        email: '',
+        mobile: '',
+        GST: '',
+        businessDetails: {
+            businessName: '',
+            businessEmail: '',
+            businessMobile: '',
+            businessAddress: ''
+        },
+        bankDetails: {
+            accountHolderName: '',
+            accountNumber: '',
+            ifscCode: '',
+            bankName: ''
+        }
     });
 
     const [passwordData, setPasswordData] = useState({
@@ -46,14 +58,58 @@ const SellerProfile = () => {
         confirm: false
     });
 
-    const [isEditing, setIsEditing] = useState(false);
+    useEffect(() => {
+        const jwt = localStorage.getItem("sellerJwt");
+        if (jwt && !seller.seller) {
+            dispatch(getSellerProfile(jwt));
+        }
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (seller.seller) {
+            setProfileData({
+                sellerName: seller.seller.sellerName || '',
+                email: seller.seller.email || '',
+                mobile: seller.seller.mobile || '',
+                GST: seller.seller.GST || '',
+                businessDetails: {
+                    businessName: seller.seller.businessDetails?.businessName || '',
+                    businessEmail: seller.seller.businessDetails?.businessEmail || '',
+                    businessMobile: seller.seller.businessDetails?.businessMobile || '',
+                    businessAddress: seller.seller.businessDetails?.businessAddress || ''
+                },
+                bankDetails: {
+                    accountHolderName: seller.seller.bankDetails?.accountHolderName || '',
+                    accountNumber: seller.seller.bankDetails?.accountNumber || '',
+                    ifscCode: seller.seller.bankDetails?.ifscCode || '',
+                    bankName: seller.seller.bankDetails?.bankName || ''
+                }
+            });
+        }
+    }, [seller.seller]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProfileData(prev => ({
-            ...prev,
-            [name]: value
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            setProfileData(prev => ({
+                ...prev,
+                [parent]: { ...prev[parent], [child]: value }
+            }));
+        } else {
+            setProfileData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
+    };
+
+    const handleSaveProfile = () => {
+        dispatch(updateSellerProfile({
+            jwt: localStorage.getItem("sellerJwt"),
+            sellerData: profileData
         }));
+        setIsEditing(false);
     };
 
     const handlePasswordChange = (e) => {
@@ -71,10 +127,16 @@ const SellerProfile = () => {
         }));
     };
 
-    const handleSaveProfile = () => {
-        setIsEditing(false);
-        // Add API call here
-        alert('Profile updated successfully! (Mock)');
+    const handleUpdatePassword = () => {
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+        dispatch(updateSellerProfile({
+            jwt: localStorage.getItem("sellerJwt"),
+            sellerData: { password: passwordData.newPassword }
+        }));
+        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     };
 
     return (
@@ -134,10 +196,10 @@ const SellerProfile = () => {
                                 </IconButton>
                             )}
                         </Box>
-                        <Typography variant="h6" fontWeight="bold">{profileData.fullName}</Typography>
-                        <Typography variant="body2" color="text.secondary">{profileData.businessName}</Typography>
+                        <Typography variant="h6" fontWeight="bold">{profileData.sellerName}</Typography>
+                        <Typography variant="body2" color="text.secondary">{profileData.businessDetails.businessName}</Typography>
                         <Typography variant="caption" display="block" color="text.disabled" sx={{ mt: 1 }}>
-                            Seller ID: SEL-883920
+                            Seller ID: {seller.seller?._id}
                         </Typography>
                     </Paper>
 
@@ -149,18 +211,32 @@ const SellerProfile = () => {
                             <TextField
                                 fullWidth
                                 label="Business Name"
-                                name="businessName"
-                                value={profileData.businessName}
+                                name="businessDetails.businessName"
+                                value={profileData.businessDetails.businessName}
                                 onChange={handleChange}
                                 disabled={!isEditing}
                             />
                             <TextField
                                 fullWidth
-                                label="Description"
-                                name="businessDescription"
-                                multiline
-                                rows={4}
-                                value={profileData.businessDescription}
+                                label="Business Email"
+                                name="businessDetails.businessEmail"
+                                value={profileData.businessDetails.businessEmail}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Business Mobile"
+                                name="businessDetails.businessMobile"
+                                value={profileData.businessDetails.businessMobile}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                            />
+                            <TextField
+                                fullWidth
+                                label="GSTIN"
+                                name="GST"
+                                value={profileData.GST}
                                 onChange={handleChange}
                                 disabled={!isEditing}
                             />
@@ -180,8 +256,8 @@ const SellerProfile = () => {
                                 <TextField
                                     fullWidth
                                     label="Full Name"
-                                    name="fullName"
-                                    value={profileData.fullName}
+                                    name="sellerName"
+                                    value={profileData.sellerName}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 />
@@ -200,8 +276,57 @@ const SellerProfile = () => {
                                 <TextField
                                     fullWidth
                                     label="Phone Number"
-                                    name="phone"
-                                    value={profileData.phone}
+                                    name="mobile"
+                                    value={profileData.mobile}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Paper>
+
+                    {/* Bank Details */}
+                    <Paper sx={{ p: 4, mb: 4 }}>
+                        <Typography variant="h6" gutterBottom fontWeight="600">Bank Details</Typography>
+                        <Divider sx={{ mb: 3 }} />
+
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Account Holder Name"
+                                    name="bankDetails.accountHolderName"
+                                    value={profileData.bankDetails.accountHolderName}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Account Number"
+                                    name="bankDetails.accountNumber"
+                                    value={profileData.bankDetails.accountNumber}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="IFSC Code"
+                                    name="bankDetails.ifscCode"
+                                    value={profileData.bankDetails.ifscCode}
+                                    onChange={handleChange}
+                                    disabled={!isEditing}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Bank Name"
+                                    name="bankDetails.bankName"
+                                    value={profileData.bankDetails.bankName}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 />
@@ -218,51 +343,13 @@ const SellerProfile = () => {
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
-                                    label="Street Address"
-                                    name="addressHost"
-                                    value={profileData.addressHost}
+                                    label="Business Address"
+                                    name="businessDetails.businessAddress"
+                                    value={profileData.businessDetails.businessAddress}
                                     onChange={handleChange}
                                     disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="City"
-                                    name="city"
-                                    value={profileData.city}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="State / Province"
-                                    name="state"
-                                    value={profileData.state}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Zip / Postal Code"
-                                    name="zipCode"
-                                    value={profileData.zipCode}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Country"
-                                    name="country"
-                                    value={profileData.country}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
+                                    multiline
+                                    rows={3}
                                 />
                             </Grid>
                         </Grid>
@@ -341,7 +428,12 @@ const SellerProfile = () => {
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <Button variant="contained" color="primary" disabled={!passwordData.currentPassword}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={!passwordData.currentPassword}
+                                    onClick={handleUpdatePassword}
+                                >
                                     Update Password
                                 </Button>
                             </Grid>

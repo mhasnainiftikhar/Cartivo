@@ -23,7 +23,8 @@ import {
     ShoppingCartOutlined as CartIcon,
     Menu as MenuIcon,
     Close as CloseIcon,
-    Logout as LogoutIcon
+    Logout as LogoutIcon,
+    Storefront as StorefrontIcon
 } from '@mui/icons-material';
 import { Avatar, Tooltip } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
@@ -305,26 +306,28 @@ const Navbar = () => {
                             {/* Seller Button */}
                             {!isMobile && (
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => navigate(isSellerLoggedIn ? '/seller/dashboard' : '/become-seller')}
-                                        sx={{
-                                            mr: 1,
-                                            color: 'primary.main',
-                                            borderColor: 'primary.main',
-                                            fontWeight: 600,
-                                            textTransform: 'none',
-                                            borderRadius: 8,
-                                            px: 2,
-                                            whiteSpace: 'nowrap',
-                                            '&:hover': {
-                                                bgcolor: 'rgba(0, 23, 66, 0.05)',
+                                    {!isSellerLoggedIn && (
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => navigate('/become-seller')}
+                                            sx={{
+                                                mr: 1,
+                                                color: 'primary.main',
                                                 borderColor: 'primary.main',
-                                            }
-                                        }}
-                                    >
-                                        {isSellerLoggedIn ? 'Dashboard' : 'Become Seller'}
-                                    </Button>
+                                                fontWeight: 600,
+                                                textTransform: 'none',
+                                                borderRadius: 8,
+                                                px: 2,
+                                                whiteSpace: 'nowrap',
+                                                '&:hover': {
+                                                    bgcolor: 'rgba(0, 23, 66, 0.05)',
+                                                    borderColor: 'primary.main',
+                                                }
+                                            }}
+                                        >
+                                            Become Seller
+                                        </Button>
+                                    )}
                                     {!isSellerLoggedIn && !auth.user && (
                                         <Button
                                             variant="text"
@@ -349,41 +352,57 @@ const Navbar = () => {
                                         <SearchIcon />
                                     </IconButton>
                                 )}
-                                <Tooltip title={auth.user ? "Account" : "Login"}>
-                                    <IconButton
-                                        onClick={() => navigate(auth.user ? '/account' : '/login')}
-                                        sx={{
-                                            color: '#001742',
-                                            p: auth.user ? 0.5 : 1
-                                        }}
-                                    >
-                                        {auth.user ? (
-                                            <Avatar
+
+                                {isSellerLoggedIn ? (
+                                    <Tooltip title="Seller Dashboard">
+                                        <IconButton
+                                            onClick={() => navigate('/seller/dashboard')}
+                                            sx={{ color: '#001742' }}
+                                        >
+                                            <StorefrontIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                ) : (
+                                    <>
+                                        <Tooltip title={auth.user ? "Account" : "Login"}>
+                                            <IconButton
+                                                onClick={() => navigate(auth.user ? '/account' : '/login')}
                                                 sx={{
-                                                    width: 32,
-                                                    height: 32,
-                                                    bgcolor: '#001742',
-                                                    fontSize: '0.9rem',
-                                                    fontWeight: 700
+                                                    color: '#001742',
+                                                    p: auth.user ? 0.5 : 1
                                                 }}
                                             >
-                                                {auth.user.name?.charAt(0).toUpperCase()}
-                                            </Avatar>
-                                        ) : (
-                                            <PersonIcon />
-                                        )}
-                                    </IconButton>
-                                </Tooltip>
-                                <IconButton onClick={() => navigate('/wishlist')} sx={{ color: '#001742' }}>
-                                    <Badge badgeContent={wishlist.wishlist?.products?.length || 0} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
-                                        <WishlistIcon />
-                                    </Badge>
-                                </IconButton>
-                                <IconButton onClick={() => navigate('/cart')} sx={{ color: '#001742' }}>
-                                    <Badge badgeContent={cart.cart?.cartItems?.length || 0} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
-                                        <CartIcon />
-                                    </Badge>
-                                </IconButton>
+                                                {auth.user ? (
+                                                    <Avatar
+                                                        sx={{
+                                                            width: 32,
+                                                            height: 32,
+                                                            bgcolor: '#001742',
+                                                            fontSize: '0.9rem',
+                                                            fontWeight: 700
+                                                        }}
+                                                    >
+                                                        {auth.user.name?.charAt(0).toUpperCase()}
+                                                    </Avatar>
+                                                ) : (
+                                                    <PersonIcon />
+                                                )}
+                                            </IconButton>
+                                        </Tooltip>
+
+                                        <IconButton onClick={() => navigate('/wishlist')} sx={{ color: '#001742' }}>
+                                            <Badge badgeContent={wishlist.wishlist?.products?.length || 0} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
+                                                <WishlistIcon />
+                                            </Badge>
+                                        </IconButton>
+
+                                        <IconButton onClick={() => navigate('/cart')} sx={{ color: '#001742' }}>
+                                            <Badge badgeContent={cart.cart?.cartItems?.length || 0} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
+                                                <CartIcon />
+                                            </Badge>
+                                        </IconButton>
+                                    </>
+                                )}
                             </Box>
                         </Box>
                     </Toolbar>

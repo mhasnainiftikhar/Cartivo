@@ -40,6 +40,7 @@ import SellerTransactions from './seller/pages/Transactions/SellerTransactions'
 import SellerProfile from './seller/pages/Profile/SellerProfile'
 import BecomeSeller from './customer/pages/BecomeSeller/BecomeSeller'
 import SellerLogin from './seller/pages/Auth/SellerLogin'
+import SellerProtectedRoute from './seller/components/SellerProtectedRoute'
 
 // Admin Imports
 import AdminLayout from './admin/AdminLayout'
@@ -117,16 +118,22 @@ const App = () => {
         <Route path="/security" element={<Security />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
 
+        import SellerProtectedRoute from './seller/components/SellerProtectedRoute'
+
+        // ... (other imports)
+
         {/* Seller Routes */}
-        <Route path="/seller" element={<SellerLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<SellerDashboardPage />} />
-          <Route path="orders" element={<SellerOrders />} />
-          <Route path="products" element={<SellerProducts />} />
-          <Route path="add-product" element={<AddProduct />} />
-          <Route path="payments" element={<SellerPayments />} />
-          <Route path="transactions" element={<SellerTransactions />} />
-          <Route path="profile" element={<SellerProfile />} />
+        <Route path="/seller" element={<SellerProtectedRoute />}>
+          <Route element={<SellerLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<SellerDashboardPage />} />
+            <Route path="orders" element={<SellerOrders />} />
+            <Route path="products" element={<SellerProducts />} />
+            <Route path="add-product" element={<AddProduct />} />
+            <Route path="payments" element={<SellerPayments />} />
+            <Route path="transactions" element={<SellerTransactions />} />
+            <Route path="profile" element={<SellerProfile />} />
+          </Route>
         </Route>
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>

@@ -6,6 +6,7 @@ import orderReducer from "./OrderSlice";
 import wishlistReducer from "./WishlistSlice";
 import alertReducer from "./AlertSlice";
 import sellerReducer from "./SellerSlice";
+import sellerOrderReducer from "./SellerOrderSlice";
 
 export const store = configureStore({
     reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
         wishlist: wishlistReducer,
         alert: alertReducer,
         seller: sellerReducer,
+        sellerOrder: sellerOrderReducer,
     },
 });

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSellerProducts, deleteProduct } from '../../../State/ProductSlice';
 import {
     Box,
     Typography,
@@ -96,10 +98,22 @@ const getStatusColor = (status) => {
 
 const SellerProducts = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { product } = useSelector(store => store);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredProducts = mockProducts.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    useEffect(() => {
+        dispatch(fetchSellerProducts(localStorage.getItem("sellerJwt")));
+    }, [dispatch]);
+
+    const handleDeleteProduct = (productId) => {
+        if (window.confirm("Are you sure you want to delete this product?")) {
+            dispatch(deleteProduct({ productId, jwt: localStorage.getItem("sellerJwt") }));
+        }
+    };
+
+    const filteredProducts = product.products.filter(p =>
+        p.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -164,26 +178,26 @@ const SellerProducts = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredProducts.map((product) => (
+                        {filteredProducts.map((p) => (
                             <TableRow
-                                key={product.id}
+                                key={p._id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: '#f9f9f9' } }}
                             >
                                 <TableCell component="th" scope="row">
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                        <Avatar variant="rounded" src={product.image} alt={product.name} />
+                                        <Avatar variant="rounded" src={p.images[0]} alt={p.title} />
                                         <Typography variant="body2" fontWeight="500">
-                                            {product.name}
+                                            {p.title}
                                         </Typography>
                                     </Box>
                                 </TableCell>
-                                <TableCell>{product.category}</TableCell>
-                                <TableCell>${product.price.toFixed(2)}</TableCell>
-                                <TableCell>{product.stock}</TableCell>
+                                <TableCell>{p.category?.name}</TableCell>
+                                <TableCell>${p.sellingPrice.toFixed(2)}</TableCell>
+                                <TableCell>{p.quantity}</TableCell>
                                 <TableCell>
                                     <Chip
-                                        label={product.status}
-                                        color={getStatusColor(product.status)}
+                                        label={p.quantity > 0 ? 'Active' : 'Out of Stock'}
+                                        color={p.quantity > 0 ? 'success' : 'error'}
                                         size="small"
                                         variant="outlined"
                                         sx={{ fontWeight: 500 }}
@@ -194,7 +208,7 @@ const SellerProducts = () => {
                                         <IconButton size="small" color="primary">
                                             <EditIcon fontSize="small" />
                                         </IconButton>
-                                        <IconButton size="small" color="error">
+                                        <IconButton size="small" color="error" onClick={() => handleDeleteProduct(p._id)}>
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
                                     </Stack>

@@ -22,6 +22,8 @@ import {
     ExitToApp as LogoutIcon
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { sellerLogout } from '../../../State/SellerSlice';
 
 const drawerWidth = 240;
 
@@ -39,10 +41,10 @@ const SellerSidebar = ({ open, onClose }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const theme = useTheme();
+    const dispatch = useDispatch();
 
     const handleLogout = () => {
-        // Implement logout logic here
-        console.log('Logging out...');
+        dispatch(sellerLogout());
         navigate('/');
     };
 

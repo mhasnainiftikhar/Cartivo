@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSellerOrders, updateOrderItemStatus } from '../../../State/SellerOrderSlice';
 import {
     Box,
     Typography,
@@ -10,7 +12,11 @@ import {
     Chip,
     Divider,
     Stack,
-    Avatar
+    Avatar,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel
 } from '@mui/material';
 import {
     AccessTime,
@@ -90,7 +96,7 @@ const getStatusIcon = (status) => {
     }
 };
 
-const OrderCard = ({ order }) => {
+const OrderCard = ({ order, onStatusUpdate }) => {
     return (
         <Card sx={{
             border: '1px solid #eee',
@@ -103,14 +109,14 @@ const OrderCard = ({ order }) => {
         }}>
             <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                        {order.id}
+                    <Typography variant="subtitle2" fontWeight="bold" sx={{ color: 'text.secondary' }}>
+                        #{order._id.slice(-6).toUpperCase()}
                     </Typography>
                     <Chip
-                        label={order.status}
-                        color={getStatusColor(order.status)}
+                        label={order.orderStatus}
+                        color={getStatusColor(order.orderStatus)}
                         size="small"
-                        icon={getStatusIcon(order.status)}
+                        icon={getStatusIcon(order.orderStatus)}
                         variant="outlined"
                     />
                 </Box>
@@ -118,42 +124,54 @@ const OrderCard = ({ order }) => {
                 <Divider sx={{ mb: 2 }} />
 
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar src={order.image} alt={order.customer} sx={{ width: 40, height: 40, mr: 2 }} />
-                    <Box>
-                        <Typography variant="body1" fontWeight="500">{order.customer}</Typography>
-                        <Typography variant="caption" color="text.secondary">{order.date}</Typography>
+                    <Avatar variant="rounded" src={order.product?.images[0]} alt={order.product?.title} sx={{ width: 45, height: 45, mr: 2 }} />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography variant="body2" fontWeight="600" noWrap>{order.product?.title}</Typography>
+                        <Typography variant="caption" color="text.secondary" display="block">Customer: {order.userId?.name}</Typography>
+                        <Typography variant="caption" color="text.secondary">{new Date(order.createdAt).toLocaleDateString()}</Typography>
                     </Box>
                 </Box>
 
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                     <Typography variant="body2" color="text.secondary">
-                        {order.items} {order.items === 1 ? 'Item' : 'Items'}
+                        Qty: {order.quantity}
                     </Typography>
-                    <Typography variant="h6" color="primary.main" fontWeight="bold">
-                        {order.total}
+                    <Typography variant="subtitle1" color="primary.main" fontWeight="bold">
+                        ${order.sellingPrice.toFixed(2)}
                     </Typography>
                 </Stack>
+
+                <FormControl fullWidth size="small">
+                    <InputLabel color="primary">Update Status</InputLabel>
+                    <Select
+                        value={order.orderStatus}
+                        label="Update Status"
+                        onChange={(e) => onStatusUpdate(order._id, e.target.value)}
+                        sx={{ borderRadius: 2 }}
+                    >
+                        <MenuItem value="PENDING">Pending</MenuItem>
+                        <MenuItem value="SHIPPED">Shipped</MenuItem>
+                        <MenuItem value="DELIVERED">Delivered</MenuItem>
+                        <MenuItem value="CANCELLED">Cancelled</MenuItem>
+                    </Select>
+                </FormControl>
             </CardContent>
-            <CardActions sx={{ p: 2, pt: 0 }}>
-                <Button
-                    fullWidth
-                    variant="contained"
-                    endIcon={<ArrowForward />}
-                    sx={{
-                        textTransform: 'none',
-                        borderRadius: 2,
-                        bgcolor: 'primary.main',
-                        '&:hover': { bgcolor: 'primary.dark' }
-                    }}
-                >
-                    View Details
-                </Button>
-            </CardActions>
         </Card>
     );
 };
 
 const SellerOrders = () => {
+    const dispatch = useDispatch();
+    const { sellerOrder } = useSelector(store => store);
+
+    useEffect(() => {
+        dispatch(fetchSellerOrders(localStorage.getItem("sellerJwt")));
+    }, [dispatch]);
+
+    const handleStatusUpdate = (orderItemId, status) => {
+        dispatch(updateOrderItemStatus({ jwt: localStorage.getItem("sellerJwt"), orderItemId, status }));
+    };
+
     return (
         <Box>
             <Box sx={{ mb: 4 }}>
@@ -164,9 +182,9 @@ const SellerOrders = () => {
             </Box>
 
             <Grid container spacing={3}>
-                {mockOrders.map((order) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={order.id}>
-                        <OrderCard order={order} />
+                {sellerOrder.orders.map((order) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={order._id}>
+                        <OrderCard order={order} onStatusUpdate={handleStatusUpdate} />
                     </Grid>
                 ))}
             </Grid>

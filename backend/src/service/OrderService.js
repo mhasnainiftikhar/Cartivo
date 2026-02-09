@@ -28,7 +28,8 @@ class OrderService {
                     quantity: item.quantity,
                     mrpPrice: item.mrpPrice,
                     sellingPrice: item.sellingPrice,
-                    userId: user._id
+                    userId: user._id,
+                    seller: item.product.seller // item.product should be populated from cartService.findUserCart
                 });
                 const savedOrderItem = await orderItem.save();
                 orderItems.push(savedOrderItem._id);

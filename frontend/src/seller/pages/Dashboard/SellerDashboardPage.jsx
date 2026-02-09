@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSellerReport } from '../../../State/SellerSlice';
 import {
     Box,
     Grid,
@@ -93,6 +95,18 @@ const OverviewCard = ({ title, value, icon, color }) => (
 const SellerDashboardPage = () => {
     const [timeRange, setTimeRange] = useState('weekly');
     const theme = useTheme();
+    const dispatch = useDispatch();
+    const { seller } = useSelector(store => store);
+
+    useEffect(() => {
+        dispatch(fetchSellerReport(localStorage.getItem("sellerJwt")));
+    }, [dispatch]);
+
+    const report = seller.report || {
+        totalRevenue: 0,
+        totalOrders: 0,
+        totalSales: 0
+    };
 
     const getChartData = () => {
         switch (timeRange) {
@@ -113,7 +127,7 @@ const SellerDashboardPage = () => {
                 <Grid item xs={12} sm={6} md={3}>
                     <OverviewCard
                         title="Total Revenue"
-                        value="$45,231.89"
+                        value={`$${report.totalRevenue.toFixed(2)}`}
                         icon={<AttachMoney />}
                         color={theme.palette.primary.main}
                     />
@@ -121,15 +135,15 @@ const SellerDashboardPage = () => {
                 <Grid item xs={12} sm={6} md={3}>
                     <OverviewCard
                         title="Total Orders"
-                        value="1,345"
+                        value={report.totalOrders.toString()}
                         icon={<ShoppingBag />}
                         color={theme.palette.warning.main}
                     />
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                     <OverviewCard
-                        title="New Customers"
-                        value="345"
+                        title="Total Sales"
+                        value={report.totalSales.toString()}
                         icon={<Person />}
                         color={theme.palette.info.main}
                     />

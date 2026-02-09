@@ -26,6 +26,16 @@ const orderItemSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
+    },
+    seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Seller",
+        required: true
+    },
+    orderStatus: {
+        type: String,
+        required: true,
+        default: "PENDING"
     }
 }, { timestamps: true });
 

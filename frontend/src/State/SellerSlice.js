@@ -54,12 +54,34 @@ export const sendSellerLoginOtp = createAsyncThunk("seller/sendLoginOtp", async 
     }
 });
 
+export const fetchSellerReport = createAsyncThunk("seller/fetchReport", async (jwt, { rejectWithValue }) => {
+    try {
+        const response = await api.get("/api/seller-reports/report", {
+            headers: { Authorization: `Bearer ${jwt}` }
+        });
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
+export const updateSellerProfile = createAsyncThunk("seller/updateProfile", async ({ jwt, sellerData }, { dispatch, rejectWithValue }) => {
+    try {
+        const response = await api.patch("/api/sellers/update", sellerData, {
+            headers: { Authorization: `Bearer ${jwt}` }
+        });
+        dispatch(showAlert({ message: "Profile updated successfully", severity: "success" }));
+        return response.data;
+    } catch (error) {
+        dispatch(showAlert({ message: error.response?.data?.message || "Failed to update profile", severity: "error" }));
+        return rejectWithValue(error.response.data);
+    }
+});
+
 export const getSellerProfile = createAsyncThunk("seller/getProfile", async (jwt, { rejectWithValue }) => {
     try {
         const response = await api.get("/api/sellers/profile", {
-            headers: {
-                Authorization: `Bearer ${jwt}`,
-            },
+            headers: { Authorization: `Bearer ${jwt}` }
         });
         return response.data;
     } catch (error) {
@@ -73,6 +95,7 @@ const initialState = {
     loading: false,
     error: null,
     otpSent: false,
+    report: null,
 };
 
 const sellerSlice = createSlice({
@@ -82,6 +105,7 @@ const sellerSlice = createSlice({
         sellerLogout: (state) => {
             state.seller = null;
             state.sellerJwt = null;
+            state.report = null;
             localStorage.removeItem("sellerJwt");
         },
     },
@@ -123,6 +147,22 @@ const sellerSlice = createSlice({
                 state.otpSent = true;
             })
             .addCase(sendSellerSignupOtp.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchSellerReport.fulfilled, (state, action) => {
+                state.loading = false;
+                state.report = action.payload;
+            })
+            .addCase(fetchSellerReport.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(updateSellerProfile.fulfilled, (state, action) => {
+                state.loading = false;
+                state.seller = action.payload;
+            })
+            .addCase(updateSellerProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
