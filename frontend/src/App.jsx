@@ -34,10 +34,17 @@ import SellerTransactions from './seller/pages/Transactions/SellerTransactions'
 import SellerProfile from './seller/pages/Profile/SellerProfile'
 import BecomeSeller from './customer/pages/BecomeSeller/BecomeSeller'
 
+// Admin Imports
+import AdminLayout from './admin/AdminLayout'
+import AdminDashboard from './admin/pages/Dashboard/AdminDashboard'
+import AdminCoupons from './admin/pages/Coupons/AdminCoupons'
+import AddCoupon from './admin/pages/AddCoupon/AddCoupon'
+import AdminPlaceholder from './admin/pages/AdminPlaceholder.jsx'
+
 const App = () => {
   const location = useLocation();
-  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller');
-  const hideFooter = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller');
+  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller') || location.pathname.startsWith('/admin');
+  const hideFooter = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller') || location.pathname.startsWith('/admin');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -81,6 +88,17 @@ const App = () => {
           <Route path="payments" element={<SellerPayments />} />
           <Route path="transactions" element={<SellerTransactions />} />
           <Route path="profile" element={<SellerProfile />} />
+        </Route>
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="coupons" element={<AdminCoupons />} />
+          <Route path="add-coupon" element={<AddCoupon />} />
+          <Route path="home-page" element={<AdminPlaceholder title="Home Page Settings" />} />
+          <Route path="electronics" element={<AdminPlaceholder title="Electronics Category" />} />
+          <Route path="categories" element={<AdminPlaceholder title="Shop By Category" />} />
+          <Route path="deals" element={<AdminPlaceholder title="Manage Deals" />} />
         </Route>
       </Routes>
       {!hideFooter && <Footer />}
