@@ -1,6 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { addProductToWishlist, removeProductFromWishlist } from '../../../State/WishlistSlice';
+import { addItemToCart } from '../../../State/CartSlice';
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ const ProductCard = ({ product }) => {
 
     const handleWishlist = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (!auth.user) {
             navigate("/login");
             return;
@@ -22,31 +24,55 @@ const ProductCard = ({ product }) => {
         }
     };
 
+    const handleAddToCart = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!auth.user) {
+            navigate("/login");
+            return;
+        }
+        const data = {
+            productId: product.id || product._id,
+            quantity: 1,
+            size: "M" // Default size or handle based on product type
+        };
+        dispatch(addItemToCart(data));
+    };
+
+    const title = product.title || product.name;
+    const image = product.images?.[0] || product.image;
+    const sellingPrice = product.sellingPrice || product.price;
+    const mrpPrice = product.mrpPrice || (product.price / (1 - (product.discount || 0) / 100));
+    const discount = product.discountPercentage || product.discount;
+
     return (
         <Link to={`/product/${product.id || product._id}`} className='group cursor-pointer bg-white rounded-3xl p-4 border border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 block no-underline text-inherit'>
             {/* Product Image */}
             <div className='relative aspect-square overflow-hidden rounded-2xl bg-gray-50 mb-6'>
                 <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
                 <img
-                    src={product.image}
-                    alt={product.name}
+                    src={image}
+                    alt={title}
                     className='w-full h-full object-contain transition-transform duration-700 group-hover:scale-110 p-4'
                 />
 
                 {/* Wishlist Icon */}
                 <button
                     onClick={handleWishlist}
-                    className={`absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center transition-all shadow-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 ${isWishlisted ? 'text-red-500' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}
+                    className={`absolute z-20 top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center transition-all shadow-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 ${isWishlisted ? 'text-red-500' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}
                 >
                     <svg className="w-5 h-5" fill={isWishlisted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 </button>
 
-                {/* Quick View Button */}
-                <div className='absolute bottom-0 left-0 w-full p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500'>
-                    <button className='w-full py-3 bg-[#001742] text-white text-sm font-bold rounded-xl shadow-xl shadow-blue-900/20'>
-                        Quick View
+                {/* Quick Action Button */}
+                <div className='absolute bottom-0 left-0 w-full p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-20'>
+                    <button
+                        onClick={handleAddToCart}
+                        className='w-full py-3 bg-[#001742] text-white text-sm font-bold rounded-xl shadow-xl shadow-blue-900/20 active:scale-95 transition-transform'
+                    >
+                        Add to Cart
                     </button>
                 </div>
             </div>
@@ -70,24 +96,24 @@ const ProductCard = ({ product }) => {
                 </div>
 
                 <h3 className='font-bold text-gray-900 line-clamp-2 min-h-[2.5rem] group-hover:text-blue-600 transition-colors text-sm lg:text-base'>
-                    {product.name}
+                    {title}
                 </h3>
 
                 <div className='flex items-center gap-2'>
                     <span className='text-xl lg:text-2xl font-black text-[#001742]'>
-                        ${(product.price * (1 - product.discount / 100)).toFixed(2)}
+                        ₹{sellingPrice.toFixed(2)}
                     </span>
-                    {product.discount > 0 && (
+                    {discount > 0 && (
                         <span className='text-xs text-gray-400 line-through font-medium'>
-                            ${product.price.toFixed(2)}
+                            ₹{mrpPrice.toFixed(2)}
                         </span>
                     )}
                 </div>
 
                 <div className='flex items-center gap-2'>
                     <span className='text-[10px] font-bold text-blue-600 bg-blue-50 px-1 py-0.5 rounded'>Express Delivery</span>
-                    {product.discount > 0 && (
-                        <span className='text-[10px] font-bold text-red-600 bg-red-50 px-1 py-0.5 rounded'>Save {product.discount}%</span>
+                    {discount > 0 && (
+                        <span className='text-[10px] font-bold text-red-600 bg-red-50 px-1 py-0.5 rounded'>Save {discount}%</span>
                     )}
                 </div>
             </div>

@@ -24,8 +24,8 @@ const CartItem = ({ item }) => {
             {/* Product Image */}
             <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl overflow-hidden bg-gray-100 shrink-0">
                 <img
-                    src={item.product?.image}
-                    alt={item.product?.name}
+                    src={item.product?.images?.[0] || item.product?.image}
+                    alt={item.product?.title || item.product?.name}
                     className="w-full h-full object-cover"
                 />
             </div>
@@ -38,7 +38,7 @@ const CartItem = ({ item }) => {
                             {item.product?.brand}
                         </Typography>
                         <Typography className="text-base lg:text-lg font-black text-[#001742] leading-tight line-clamp-2">
-                            {item.product?.name}
+                            {item.product?.title || item.product?.name}
                         </Typography>
                         <div className="flex items-center gap-2 mt-2">
                             {item.size && (

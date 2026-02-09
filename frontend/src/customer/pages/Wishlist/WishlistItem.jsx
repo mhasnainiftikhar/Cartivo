@@ -27,8 +27,8 @@ const WishlistItem = ({ item }) => {
             {/* Image Container */}
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-6">
                 <img
-                    src={item.image}
-                    alt={item.name}
+                    src={item.images?.[0] || item.image}
+                    alt={item.title || item.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <IconButton
@@ -45,16 +45,16 @@ const WishlistItem = ({ item }) => {
                     {item.brand}
                 </Typography>
                 <Typography className="text-lg font-black text-[#001742] mb-3 leading-tight line-clamp-2 min-h-[3rem]">
-                    {item.name}
+                    {item.title || item.name}
                 </Typography>
 
                 <div className="flex items-center gap-3 mb-6">
                     <Typography className="text-2xl font-black text-[#001742]">
-                        ₹{(item.price * (1 - (item.discount || 0) / 100)).toFixed(2)}
+                        ₹{(item.sellingPrice || (item.price * (1 - (item.discount || item.discountPercentage || 0) / 100))).toFixed(2)}
                     </Typography>
-                    {item.discount > 0 && (
+                    {(item.discount > 0 || item.discountPercentage > 0) && (
                         <Typography className="text-sm text-gray-400 line-through font-medium">
-                            ₹{item.price.toFixed(2)}
+                            ₹{(item.mrpPrice || item.price).toFixed(2)}
                         </Typography>
                     )}
                 </div>

@@ -6,12 +6,12 @@ import Deal from './Deals/Deal'
 import { Grid, Box, Typography } from '@mui/material'
 
 const mockProducts = [
-  { name: "Premium Wireless Headset", price: 299, discount: 15, brand: "AudioTech", image: "https://m.media-amazon.com/images/I/41XjE57VLvL._AC_UY327_FMwebp_QL65_.jpg" },
-  { name: "Smart Watch Ultra", price: 499, discount: 10, brand: "Wristly", image: "https://m.media-amazon.com/images/I/61afO93SRXL._AC_UL480_FMwebp_QL65_.jpg" },
-  { name: "Pro Series Camera", price: 1299, discount: 20, brand: "Capture", image: "https://m.media-amazon.com/images/I/714hINuPoBL._AC_UY327_FMwebp_QL65_.jpg" },
-  { name: "Slim Laptop Pro", price: 1499, discount: 5, brand: "Techy", image: "https://m.media-amazon.com/images/I/71jQbkYw5KL._AC_UY327_FMwebp_QL65_.jpg" },
-  { name: "Noise Cancelling Buds", price: 199, discount: 0, brand: "AudioTech", image: "https://m.media-amazon.com/images/I/41XjE57VLvL._AC_UY327_FMwebp_QL65_.jpg" },
-  { name: "Portable Speaker Plus", price: 149, discount: 25, brand: "SoundBox", image: "https://m.media-amazon.com/images/I/81l7mB5LhsL._AC_UY327_FMwebp_QL65_.jpg" },
+  { title: "Premium Wireless Headset", mrpPrice: 350, sellingPrice: 299, discountPercentage: 15, brand: "AudioTech", images: ["https://m.media-amazon.com/images/I/41XjE57VLvL._AC_UY327_FMwebp_QL65_.jpg"] },
+  { title: "Smart Watch Ultra", mrpPrice: 550, sellingPrice: 499, discountPercentage: 10, brand: "Wristly", images: ["https://m.media-amazon.com/images/I/61afO93SRXL._AC_UL480_FMwebp_QL65_.jpg"] },
+  { title: "Pro Series Camera", mrpPrice: 1600, sellingPrice: 1299, discountPercentage: 20, brand: "Capture", images: ["https://m.media-amazon.com/images/I/714hINuPoBL._AC_UY327_FMwebp_QL65_.jpg"] },
+  { title: "Slim Laptop Pro", mrpPrice: 1600, sellingPrice: 1499, discountPercentage: 5, brand: "Techy", images: ["https://m.media-amazon.com/images/I/71jQbkYw5KL._AC_UY327_FMwebp_QL65_.jpg"] },
+  { title: "Noise Cancelling Buds", mrpPrice: 199, sellingPrice: 199, discountPercentage: 0, brand: "AudioTech", images: ["https://m.media-amazon.com/images/I/41XjE57VLvL._AC_UY327_FMwebp_QL65_.jpg"] },
+  { title: "Portable Speaker Plus", mrpPrice: 200, sellingPrice: 149, discountPercentage: 25, brand: "SoundBox", images: ["https://m.media-amazon.com/images/I/81l7mB5LhsL._AC_UY327_FMwebp_QL65_.jpg"] },
 ];
 
 const homeCategories = [

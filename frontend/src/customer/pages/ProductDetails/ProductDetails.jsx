@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -8,7 +8,8 @@ import {
     Divider,
     Rating,
     Breadcrumbs,
-    Link as MuiLink
+    Link as MuiLink,
+    CircularProgress
 } from '@mui/material';
 import {
     FavoriteBorder,
@@ -21,43 +22,31 @@ import {
     SecurityOutlined
 } from '@mui/icons-material';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-
-const dummyProduct = {
-    id: 1,
-    name: "Apple MacBook Pro 14 M3 Chip - Space Black",
-    brand: "Apple",
-    description: "The 14-inch MacBook Pro blasts forward with M3, an incredibly advanced chip that brings serious speed and capability. With best-in-class battery life—up to 22 hours—and a beautiful Liquid Retina XDR display, it’s a pro laptop without equal.",
-    price: 1999.00,
-    discount: 10,
-    images: [
-        "https://m.media-amazon.com/images/I/71jQbkYw5KL._AC_UY327_FMwebp_QL65_.jpg",
-        "https://m.media-amazon.com/images/I/61afO93SRXL._AC_UL480_FMwebp_QL65_.jpg",
-        "https://m.media-amazon.com/images/I/714hINuPoBL._AC_UY327_FMwebp_QL65_.jpg"
-    ],
-    colors: ["Space Black", "Silver"],
-    specs: [
-        { label: "Processor", value: "Apple M3 Chip" },
-        { label: "Memory", value: "8GB Unified Memory" },
-        { label: "Storage", value: "512GB SSD" },
-        { label: "Display", value: "14.2-inch Liquid Retina XDR" }
-    ],
-    rating: 4.8,
-    reviews: 124
-};
-
 import { useSelector, useDispatch } from 'react-redux';
 import { addItemToCart } from '../../../State/CartSlice';
 import { addProductToWishlist, removeProductFromWishlist } from '../../../State/WishlistSlice';
+import { findProductById } from '../../../State/ProductSlice';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { auth, wishlist } = useSelector(store => store);
+    const { auth, wishlist, product } = useSelector(store => store);
 
-    const [selectedImage, setSelectedImage] = useState(dummyProduct.images[0]);
+    const [selectedImage, setSelectedImage] = useState("");
     const [quantity, setQuantity] = useState(1);
-    const [selectedColor, setSelectedColor] = useState(dummyProduct.colors[0]);
+    const [selectedSize, setSelectedSize] = useState("");
+
+    useEffect(() => {
+        dispatch(findProductById(id));
+    }, [id, dispatch]);
+
+    useEffect(() => {
+        if (product.product) {
+            setSelectedImage(product.product.images[0]);
+            setSelectedSize(product.product.size || "M");
+        }
+    }, [product.product]);
 
     const isWishlisted = wishlist.wishlist?.products?.some(p => p._id === id);
 
@@ -68,7 +57,7 @@ const ProductDetails = () => {
         }
         const data = {
             productId: id,
-            size: selectedColor, // Using color as size for now as per dummy UI
+            size: selectedSize,
             quantity: quantity
         };
         dispatch(addItemToCart(data));
@@ -86,7 +75,25 @@ const ProductDetails = () => {
         }
     };
 
-    const discountedPrice = dummyProduct.price * (1 - dummyProduct.discount / 100);
+    if (product.loading) {
+        return (
+            <Box className="min-h-screen flex items-center justify-center">
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (!product.product) {
+        return (
+            <Box className="min-h-screen flex flex-col items-center justify-center gap-4">
+                <Typography variant="h5">Product not found</Typography>
+                <Button onClick={() => navigate("/")} variant="contained" sx={{ bgcolor: '#001742' }}>Go Home</Button>
+            </Box>
+        );
+    }
+
+    const p = product.product;
+    const discountedPrice = p.sellingPrice;
 
     return (
         <Box className="min-h-screen bg-gray-50/50 pb-20">
@@ -96,7 +103,7 @@ const ProductDetails = () => {
                     <MuiLink component={Link} to="/" underline="hover" color="inherit" className="text-sm font-medium">Home</MuiLink>
                     <MuiLink component={Link} to="/products" underline="hover" color="inherit" className="text-sm font-medium">Products</MuiLink>
                     <Typography color="text.primary" className="text-sm font-bold text-blue-600 truncate max-w-[200px] md:max-w-none">
-                        {dummyProduct.name}
+                        {p.title}
                     </Typography>
                 </Breadcrumbs>
 
@@ -109,13 +116,13 @@ const ProductDetails = () => {
                                 <div className="aspect-square rounded-[32px] overflow-hidden bg-gray-50 border border-gray-100 p-8">
                                     <img
                                         src={selectedImage}
-                                        alt={dummyProduct.name}
+                                        alt={p.title}
                                         className="w-full h-full object-contain"
                                     />
                                 </div>
                                 {/* Thumbnails */}
                                 <div className="flex gap-4">
-                                    {dummyProduct.images.map((img, index) => (
+                                    {p.images?.map((img, index) => (
                                         <button
                                             key={index}
                                             onClick={() => setSelectedImage(img)}
@@ -133,53 +140,53 @@ const ProductDetails = () => {
                             <div className="flex flex-col h-full">
                                 <Box className="mb-6">
                                     <Typography className="text-blue-600 font-bold uppercase tracking-widest text-sm mb-2">
-                                        {dummyProduct.brand}
+                                        {p.brand}
                                     </Typography>
                                     <h1 className="text-3xl lg:text-5xl font-black text-[#001742] leading-[1.1] mb-4">
-                                        {dummyProduct.name}
+                                        {p.title}
                                     </h1>
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className="flex items-center bg-yellow-50 px-3 py-1 rounded-full border border-yellow-100">
-                                            <Rating value={dummyProduct.rating} readOnly precision={0.5} size="small" />
-                                            <span className="ml-2 text-yellow-700 font-black text-sm">{dummyProduct.rating}</span>
+                                            <Rating value={4.5} readOnly precision={0.5} size="small" />
+                                            <span className="ml-2 text-yellow-700 font-black text-sm">4.5</span>
                                         </div>
                                         <Typography className="text-gray-400 font-bold text-sm">
-                                            {dummyProduct.reviews} Verified Reviews
+                                            124 Verified Reviews
                                         </Typography>
                                     </div>
                                 </Box>
 
                                 <div className="flex flex-wrap items-center gap-4 mb-8">
                                     <Typography className="text-4xl lg:text-5xl font-black text-[#001742]">
-                                        ${discountedPrice.toFixed(2)}
+                                        ₹{discountedPrice.toFixed(2)}
                                     </Typography>
-                                    {dummyProduct.discount > 0 && (
+                                    {p.discountPercentage > 0 && (
                                         <div className="flex items-center gap-2">
                                             <Typography className="text-xl text-gray-400 font-bold line-through">
-                                                ${dummyProduct.price.toFixed(2)}
+                                                ₹{p.mrpPrice.toFixed(2)}
                                             </Typography>
                                             <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full font-black text-sm">
-                                                -{dummyProduct.discount}% OFF
+                                                -{p.discountPercentage}% OFF
                                             </span>
                                         </div>
                                     )}
                                 </div>
 
                                 <Typography className="text-gray-500 leading-relaxed font-medium mb-8">
-                                    {dummyProduct.description}
+                                    {p.description}
                                 </Typography>
 
-                                {/* Color Selection */}
+                                {/* Size Selection */}
                                 <div className="mb-8">
-                                    <Typography className="text-[#001742] font-black mb-4">Available Colors</Typography>
+                                    <Typography className="text-[#001742] font-black mb-4">Available Sizes</Typography>
                                     <div className="flex gap-3">
-                                        {dummyProduct.colors.map(color => (
+                                        {["S", "M", "L", "XL"].map(size => (
                                             <button
-                                                key={color}
-                                                onClick={() => setSelectedColor(color)}
-                                                className={`px-6 py-3 rounded-2xl font-bold transition-all border-2 ${selectedColor === color ? 'bg-[#001742] text-white border-[#001742] shadow-xl shadow-blue-900/20' : 'bg-white text-gray-600 border-gray-100 hover:border-gray-300'}`}
+                                                key={size}
+                                                onClick={() => setSelectedSize(size)}
+                                                className={`px-6 py-3 rounded-2xl font-bold transition-all border-2 ${selectedSize === size ? 'bg-[#001742] text-white border-[#001742] shadow-xl shadow-blue-900/20' : 'bg-white text-gray-600 border-gray-100 hover:border-gray-300'}`}
                                             >
-                                                {color}
+                                                {size}
                                             </button>
                                         ))}
                                     </div>
@@ -207,9 +214,10 @@ const ProductDetails = () => {
                                         variant="contained"
                                         startIcon={<ShoppingCartOutlined />}
                                         onClick={handleAddToCart}
+                                        disabled={p.quantity <= 0}
                                         className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-lg py-4 capitalize shadow-xl shadow-blue-600/20"
                                     >
-                                        Add to Cart
+                                        {p.quantity > 0 ? "Add to Cart" : "Out of Stock"}
                                     </Button>
 
                                     <IconButton
@@ -228,7 +236,7 @@ const ProductDetails = () => {
                                         </div>
                                         <div>
                                             <Typography className="text-[#001742] font-black text-sm">Free Delivery</Typography>
-                                            <Typography className="text-gray-400 text-xs font-bold">Orders over $500</Typography>
+                                            <Typography className="text-gray-400 text-xs font-bold">Orders over ₹999</Typography>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -255,16 +263,18 @@ const ProductDetails = () => {
                     </Grid>
                 </div>
 
-                {/* Specs Section */}
+                {/* Technical Specifications Section */}
                 <div className="mt-12 bg-white rounded-[40px] p-8 lg:p-12 shadow-sm border border-gray-100">
                     <Typography className="text-2xl font-black text-[#001742] mb-8">Technical Specifications</Typography>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                        {dummyProduct.specs.map((spec, index) => (
-                            <div key={index} className="flex justify-between items-center py-4 border-b border-gray-50 last:border-0 md:border-b">
-                                <Typography className="text-gray-500 font-bold">{spec.label}</Typography>
-                                <Typography className="text-[#001742] font-black">{spec.value}</Typography>
-                            </div>
-                        ))}
+                        <div className="flex justify-between items-center py-4 border-b border-gray-50 last:border-0 md:border-b">
+                            <Typography className="text-gray-500 font-bold">Category</Typography>
+                            <Typography className="text-[#001742] font-black">{p.category?.name || "N/A"}</Typography>
+                        </div>
+                        <div className="flex justify-between items-center py-4 border-b border-gray-50 last:border-0 md:border-b">
+                            <Typography className="text-gray-500 font-bold">Stock</Typography>
+                            <Typography className="text-[#001742] font-black">{p.quantity} Units Available</Typography>
+                        </div>
                     </div>
                 </div>
             </div>
