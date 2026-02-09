@@ -17,7 +17,8 @@ import {
     Chip,
     TextField,
     InputAdornment,
-    Stack
+    Stack,
+    CircularProgress
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -112,9 +113,17 @@ const SellerProducts = () => {
         }
     };
 
-    const filteredProducts = product.products.filter(p =>
-        p.title.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredProducts = (product.products || []).filter(p =>
+        p.title?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    if (product.loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <Box>

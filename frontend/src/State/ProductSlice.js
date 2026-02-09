@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Config/api";
+import { showAlert } from "./AlertSlice";
 
 export const fetchProducts = createAsyncThunk("product/fetchProducts", async (_, { rejectWithValue }) => {
     try {
@@ -49,6 +50,8 @@ const initialState = {
     loading: false,
     error: null,
     product: null,
+    totalPages: 1,
+    totalElements: 0,
 };
 
 const productSlice = createSlice({
@@ -67,7 +70,9 @@ const productSlice = createSlice({
             })
             .addCase(fetchProducts.fulfilled, (state, action) => {
                 state.loading = false;
-                state.products = action.payload;
+                state.products = action.payload.products || [];
+                state.totalPages = action.payload.totalPages || 1;
+                state.totalElements = action.payload.totalProducts || 0;
             })
             .addCase(fetchProducts.rejected, (state, action) => {
                 state.loading = false;
@@ -91,7 +96,7 @@ const productSlice = createSlice({
             })
             .addCase(fetchSellerProducts.fulfilled, (state, action) => {
                 state.loading = false;
-                state.products = action.payload;
+                state.products = Array.isArray(action.payload) ? action.payload : [];
             })
             .addCase(fetchSellerProducts.rejected, (state, action) => {
                 state.loading = false;

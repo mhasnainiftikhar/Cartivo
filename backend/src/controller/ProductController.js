@@ -10,7 +10,20 @@ class ProductController {
             if (!sellerId) {
                 return res.status(403).json({ message: "Only sellers can create products" });
             }
-            const product = await productService.createProduct(req.body, sellerId);
+
+            // Extract uploaded files
+            const files = req.files || [];
+
+            // Parse categoryData if it's a JSON string (from FormData)
+            if (req.body.categoryData && typeof req.body.categoryData === 'string') {
+                try {
+                    req.body.categoryData = JSON.parse(req.body.categoryData);
+                } catch (e) {
+                    return res.status(400).json({ message: "Invalid categoryData format" });
+                }
+            }
+
+            const product = await productService.createProduct(req.body, sellerId, files);
             res.status(201).json(product);
         } catch (error) {
             res.status(400).json({ message: error.message });

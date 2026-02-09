@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -13,7 +13,9 @@ import {
     InputAdornment,
     Divider,
     Stack,
-    IconButton
+    IconButton,
+    Alert,
+    CircularProgress
 } from '@mui/material';
 import {
     CloudUpload as CloudUploadIcon,
@@ -21,6 +23,7 @@ import {
     Save as SaveIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import api from '../../../Config/api';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -36,64 +39,185 @@ const VisuallyHiddenInput = styled('input')({
 
 const AddProduct = () => {
     const [productData, setProductData] = useState({
-        name: '',
+        title: '',
         description: '',
-        price: '',
-        discountPrice: '',
-        stock: '',
-        category: '',
-        subCategory: '',
-        brand: '',
-        sku: ''
+        mrpPrice: '',
+        discountPercentage: '',
+        quantity: '',
+        color: '',
+        size: '',
+        categoryData: {
+            name: '',
+            categoryId: '',
+            size: ''
+        }
     });
 
-    const [images, setImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProductData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+
+        if (name.startsWith('category.')) {
+            const categoryField = name.split('.')[1];
+            setProductData(prev => ({
+                ...prev,
+                categoryData: {
+                    ...prev.categoryData,
+                    [categoryField]: value
+                }
+            }));
+        } else {
+            setProductData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
     };
 
     const handleImageUpload = (event) => {
         if (event.target.files) {
-            const newImages = Array.from(event.target.files).map(file => URL.createObjectURL(file));
-            setImages(prev => [...prev, ...newImages]);
+            const files = Array.from(event.target.files);
+
+            // Limit to 5 images
+            if (imageFiles.length + files.length > 5) {
+                setError('You can only upload up to 5 images');
+                return;
+            }
+
+            setImageFiles(prev => [...prev, ...files]);
+
+            // Create preview URLs
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setImagePreviews(prev => [...prev, ...newPreviews]);
         }
     };
 
     const removeImage = (index) => {
-        setImages(prev => prev.filter((_, i) => i !== index));
+        setImageFiles(prev => prev.filter((_, i) => i !== index));
+        setImagePreviews(prev => {
+            // Revoke the URL to free memory
+            URL.revokeObjectURL(prev[index]);
+            return prev.filter((_, i) => i !== index);
+        });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Product Data:', productData);
-        console.log('Images:', images);
-        // Add API call logic here
-        alert('Product added successfully! (Mock)');
+        setLoading(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            // Check if seller is logged in
+            const token = localStorage.getItem('sellerJwt');
+            if (!token) {
+                setError('You must be logged in as a seller to add products');
+                setLoading(false);
+                return;
+            }
+
+            // Create FormData
+            const formData = new FormData();
+
+            // Append product data
+            formData.append('title', productData.title);
+            formData.append('description', productData.description);
+            formData.append('mrpPrice', productData.mrpPrice);
+            formData.append('discountPercentage', productData.discountPercentage);
+            formData.append('quantity', productData.quantity);
+            formData.append('color', productData.color);
+            formData.append('size', productData.size);
+            formData.append('categoryData', JSON.stringify(productData.categoryData));
+
+            // Append images
+            imageFiles.forEach((file) => {
+                formData.append('images', file);
+            });
+
+            // Send to backend - axios will automatically set Content-Type with boundary
+            const response = await api.post('/api/products', formData);
+
+            setSuccess('Product added successfully!');
+
+            // Reset form
+            setProductData({
+                title: '',
+                description: '',
+                mrpPrice: '',
+                discountPercentage: '',
+                quantity: '',
+                color: '',
+                size: '',
+                categoryData: {
+                    name: '',
+                    categoryId: '',
+                    size: ''
+                }
+            });
+            setImageFiles([]);
+            setImagePreviews([]);
+
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to add product');
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const handleDiscard = () => {
+        setProductData({
+            title: '',
+            description: '',
+            mrpPrice: '',
+            discountPercentage: '',
+            quantity: '',
+            color: '',
+            size: '',
+            categoryData: {
+                name: '',
+                categoryId: '',
+                size: ''
+            }
+        });
+        setImageFiles([]);
+        setImagePreviews([]);
+        setError('');
+        setSuccess('');
+    };
+
+    // Calculate selling price
+    const sellingPrice = productData.mrpPrice && productData.discountPercentage
+        ? (productData.mrpPrice - (productData.mrpPrice * productData.discountPercentage / 100)).toFixed(2)
+        : '';
 
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Typography variant="h4" fontWeight="bold">Add New Product</Typography>
                 <Stack direction="row" spacing={2}>
-                    <Button variant="outlined" color="inherit">
+                    <Button variant="outlined" color="inherit" onClick={handleDiscard} disabled={loading}>
                         Discard
                     </Button>
                     <Button
                         type="submit"
                         variant="contained"
-                        startIcon={<SaveIcon />}
+                        startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+                        disabled={loading}
                         sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
                     >
-                        Publish Product
+                        {loading ? 'Publishing...' : 'Publish Product'}
                     </Button>
                 </Stack>
             </Box>
+
+            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+            {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
 
             <Grid container spacing={4}>
                 {/* Left Column - Main Details */}
@@ -106,9 +230,9 @@ const AddProduct = () => {
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
-                                    label="Product Name"
-                                    name="name"
-                                    value={productData.name}
+                                    label="Product Title"
+                                    name="title"
+                                    value={productData.title}
                                     onChange={handleChange}
                                     placeholder="e.g. Mens Casual T-Shirt"
                                     required
@@ -124,6 +248,7 @@ const AddProduct = () => {
                                     multiline
                                     rows={6}
                                     placeholder="Enter product description..."
+                                    required
                                 />
                             </Grid>
                         </Grid>
@@ -154,15 +279,15 @@ const AddProduct = () => {
                                     Click to upload images
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    or drag and drop here
+                                    or drag and drop here (Max 5 images)
                                 </Typography>
                                 <VisuallyHiddenInput type="file" multiple onChange={handleImageUpload} accept="image/*" />
                             </Button>
                         </Box>
 
-                        {images.length > 0 && (
+                        {imagePreviews.length > 0 && (
                             <Box sx={{ display: 'flex', gap: 2, mt: 3, flexWrap: 'wrap' }}>
-                                {images.map((img, index) => (
+                                {imagePreviews.map((img, index) => (
                                     <Box key={index} sx={{ position: 'relative', width: 100, height: 100 }}>
                                         <Box
                                             component="img"
@@ -200,10 +325,10 @@ const AddProduct = () => {
                         <Stack spacing={3}>
                             <TextField
                                 fullWidth
-                                label="Base Price"
-                                name="price"
+                                label="MRP Price"
+                                name="mrpPrice"
                                 type="number"
-                                value={productData.price}
+                                value={productData.mrpPrice}
                                 onChange={handleChange}
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -212,15 +337,21 @@ const AddProduct = () => {
                             />
                             <TextField
                                 fullWidth
-                                label="Discounted Price"
-                                name="discountPrice"
+                                label="Discount Percentage"
+                                name="discountPercentage"
                                 type="number"
-                                value={productData.discountPrice}
+                                value={productData.discountPercentage}
                                 onChange={handleChange}
                                 InputProps={{
-                                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                    endAdornment: <InputAdornment position="end">%</InputAdornment>,
                                 }}
+                                required
                             />
+                            {sellingPrice && (
+                                <Alert severity="info">
+                                    Selling Price: ${sellingPrice}
+                                </Alert>
+                            )}
                         </Stack>
                     </Paper>
 
@@ -231,49 +362,68 @@ const AddProduct = () => {
                         <Stack spacing={3}>
                             <TextField
                                 fullWidth
-                                label="SKU (Stock Keeping Unit)"
-                                name="sku"
-                                value={productData.sku}
+                                label="Quantity in Stock"
+                                name="quantity"
+                                type="number"
+                                value={productData.quantity}
                                 onChange={handleChange}
+                                required
                             />
                             <TextField
                                 fullWidth
-                                label="Quantity in Stock"
-                                name="stock"
+                                label="Color"
+                                name="color"
                                 type="number"
-                                value={productData.stock}
+                                value={productData.color}
                                 onChange={handleChange}
+                                placeholder="Color code"
                                 required
+                            />
+                            <TextField
+                                fullWidth
+                                label="Size"
+                                name="size"
+                                value={productData.size}
+                                onChange={handleChange}
+                                placeholder="e.g. M, L, XL"
                             />
                         </Stack>
                     </Paper>
 
                     <Paper sx={{ p: 3 }}>
-                        <Typography variant="h6" gutterBottom fontWeight="600">Organization</Typography>
+                        <Typography variant="h6" gutterBottom fontWeight="600">Category</Typography>
                         <Divider sx={{ mb: 3 }} />
 
                         <Stack spacing={3}>
-                            <FormControl fullWidth>
-                                <InputLabel>Category</InputLabel>
-                                <Select
-                                    name="category"
-                                    value={productData.category}
-                                    label="Category"
-                                    onChange={handleChange}
-                                >
-                                    <MenuItem value="Men">Men</MenuItem>
-                                    <MenuItem value="Women">Women</MenuItem>
-                                    <MenuItem value="Electronics">Electronics</MenuItem>
-                                    <MenuItem value="Home">Home & Living</MenuItem>
-                                </Select>
-                            </FormControl>
-
                             <TextField
                                 fullWidth
-                                label="Brand"
-                                name="brand"
-                                value={productData.brand}
+                                label="Category Name"
+                                name="category.name"
+                                value={productData.categoryData.name}
                                 onChange={handleChange}
+                                placeholder="e.g. Electronics, Clothing"
+                                required
+                                helperText="Enter the category name for your product"
+                            />
+                            <TextField
+                                fullWidth
+                                label="Category ID"
+                                name="category.categoryId"
+                                value={productData.categoryData.categoryId}
+                                onChange={handleChange}
+                                placeholder="e.g. electronics, clothing"
+                                required
+                                helperText="Unique identifier (lowercase, no spaces)"
+                            />
+                            <TextField
+                                fullWidth
+                                label="Category Size"
+                                name="category.size"
+                                value={productData.categoryData.size}
+                                onChange={handleChange}
+                                placeholder="e.g. N/A, Standard"
+                                required
+                                helperText="Size category or N/A if not applicable"
                             />
                         </Stack>
                     </Paper>

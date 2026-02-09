@@ -136,10 +136,10 @@ const Login = () => {
                             Sign In
                         </Button>
 
-                        <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>
-                            Don't have an account?{' '}
-                            <Link component={RouterLink} to="/signup" sx={{ fontWeight: 700, color: '#2563eb', textDecoration: 'none' }}>
-                                Join Cartivo
+                        <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary', mt: 2 }}>
+                            Are you a seller?{' '}
+                            <Link component={RouterLink} to="/seller-login" sx={{ fontWeight: 700, color: '#febd69', textDecoration: 'none' }}>
+                                Seller Login
                             </Link>
                         </Typography>
                     </form>

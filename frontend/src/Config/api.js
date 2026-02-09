@@ -10,7 +10,8 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("jwt");
+    // Check for both user JWT and seller JWT
+    const token = localStorage.getItem("jwt") || localStorage.getItem("sellerJwt");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }

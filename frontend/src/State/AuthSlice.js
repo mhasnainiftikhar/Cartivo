@@ -93,9 +93,6 @@ const authSlice = createSlice({
             state.user = null;
             state.jwt = null;
             localStorage.removeItem("jwt");
-            // Note: In Redux Toolkit, we can't directly dispatch from a reducer, 
-            // but we can handle it in the component or use a listener.
-            // For simplicity, I'll add a toast in the component where logout is called.
         },
     },
     extraReducers: (builder) => {

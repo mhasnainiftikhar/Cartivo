@@ -328,19 +328,6 @@ const Navbar = () => {
                                             Become Seller
                                         </Button>
                                     )}
-                                    {!isSellerLoggedIn && !auth.user && (
-                                        <Button
-                                            variant="text"
-                                            onClick={() => navigate('/seller-login')}
-                                            sx={{
-                                                mr: 2,
-                                                color: '#001742',
-                                                fontWeight: 600,
-                                                textTransform: 'none',
-                                            }}
-                                        >
-                                            Seller Login
-                                        </Button>
                                     )}
                                 </Box>
                             )}

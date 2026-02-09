@@ -17,9 +17,13 @@ import {
 import {
     Edit as EditIcon,
     Save as SaveIcon,
-    CloudUpload as CloudUploadIcon,
     Visibility,
-    VisibilityOff
+    VisibilityOff,
+    Business as BusinessIcon,
+    Person as PersonIcon,
+    AccountBalance as BankIcon,
+    LocationOn as AddressIcon,
+    Lock as LockIcon
 } from '@mui/icons-material';
 
 const SellerProfile = () => {
@@ -141,227 +145,238 @@ const SellerProfile = () => {
 
     return (
         <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Typography variant="h4" fontWeight="bold">Profile Settings</Typography>
-                {!isEditing ? (
-                    <Button
-                        variant="contained"
-                        startIcon={<EditIcon />}
-                        onClick={() => setIsEditing(true)}
-                        sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
-                    >
-                        Edit Profile
-                    </Button>
-                ) : (
-                    <Stack direction="row" spacing={2}>
-                        <Button variant="outlined" color="inherit" onClick={() => setIsEditing(false)}>
-                            Cancel
-                        </Button>
+            {/* Header / Summary Card */}
+            <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 3, bgcolor: '#001742', color: 'white' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                        <Typography variant="h4" fontWeight="900" gutterBottom>
+                            {profileData.sellerName}
+                        </Typography>
+                        <Stack direction="row" spacing={3} alignItems="center">
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <BusinessIcon fontSize="small" sx={{ opacity: 0.8 }} />
+                                <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                                    {profileData.businessDetails.businessName}
+                                </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                                    Seller ID: {seller.seller?._id}
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </Box>
+                    {!isEditing ? (
                         <Button
                             variant="contained"
-                            startIcon={<SaveIcon />}
-                            onClick={handleSaveProfile}
-                            sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
+                            startIcon={<EditIcon />}
+                            onClick={() => setIsEditing(true)}
+                            sx={{
+                                bgcolor: 'white',
+                                color: '#001742',
+                                fontWeight: 'bold',
+                                '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' },
+                                borderRadius: 2,
+                                px: 3
+                            }}
                         >
-                            Save Changes
+                            Edit Profile
                         </Button>
-                    </Stack>
-                )}
-            </Box>
+                    ) : (
+                        <Stack direction="row" spacing={2}>
+                            <Button
+                                variant="outlined"
+                                onClick={() => setIsEditing(false)}
+                                sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)', '&:hover': { borderColor: 'white' } }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="contained"
+                                startIcon={<SaveIcon />}
+                                onClick={handleSaveProfile}
+                                sx={{ bgcolor: 'primary.main', fontWeight: 'bold', '&:hover': { bgcolor: 'primary.dark' } }}
+                            >
+                                Save Changes
+                            </Button>
+                        </Stack>
+                    )}
+                </Box>
+            </Paper>
 
             <Grid container spacing={4}>
-                {/* Left Column - Avatar & Personal Info */}
-                <Grid item xs={12} md={4}>
-                    <Paper sx={{ p: 4, textAlign: 'center', mb: 4 }}>
-                        <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                            <Avatar
-                                src="https://via.placeholder.com/150"
-                                alt="Seller Avatar"
-                                sx={{ width: 120, height: 120, mb: 2, mx: 'auto', border: '4px solid #f0f0f0' }}
-                            />
-                            {isEditing && (
-                                <IconButton
-                                    sx={{
-                                        position: 'absolute',
-                                        bottom: 20,
-                                        right: 0,
-                                        bgcolor: 'primary.main',
-                                        color: 'white',
-                                        '&:hover': { bgcolor: 'primary.dark' }
-                                    }}
-                                    component="label"
-                                >
-                                    <CloudUploadIcon fontSize="small" />
-                                    <input hidden accept="image/*" type="file" />
-                                </IconButton>
-                            )}
-                        </Box>
-                        <Typography variant="h6" fontWeight="bold">{profileData.sellerName}</Typography>
-                        <Typography variant="body2" color="text.secondary">{profileData.businessDetails.businessName}</Typography>
-                        <Typography variant="caption" display="block" color="text.disabled" sx={{ mt: 1 }}>
-                            Seller ID: {seller.seller?._id}
-                        </Typography>
-                    </Paper>
+                {/* Information Sections */}
+                <Grid item xs={12} lg={8}>
+                    <Stack spacing={4}>
+                        {/* Personal Information */}
+                        <Paper sx={{ p: 4, borderRadius: 3, border: '1px solid #eee' }} elevation={0}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                                <PersonIcon color="primary" />
+                                <Typography variant="h6" fontWeight="bold">Personal Information</Typography>
+                            </Box>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Full Name"
+                                        name="sellerName"
+                                        value={profileData.sellerName}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Email Address"
+                                        name="email"
+                                        type="email"
+                                        value={profileData.email}
+                                        disabled
+                                        helperText="Email cannot be changed"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Phone Number"
+                                        name="mobile"
+                                        value={profileData.mobile}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="GSTIN"
+                                        name="GST"
+                                        value={profileData.GST}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Paper>
 
-                    {/* Business Info Section - Moved to left for better balance */}
-                    <Paper sx={{ p: 4 }}>
-                        <Typography variant="h6" gutterBottom fontWeight="600">Business Details</Typography>
-                        <Divider sx={{ mb: 3 }} />
-                        <Stack spacing={3}>
-                            <TextField
-                                fullWidth
-                                label="Business Name"
-                                name="businessDetails.businessName"
-                                value={profileData.businessDetails.businessName}
-                                onChange={handleChange}
-                                disabled={!isEditing}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Business Email"
-                                name="businessDetails.businessEmail"
-                                value={profileData.businessDetails.businessEmail}
-                                onChange={handleChange}
-                                disabled={!isEditing}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Business Mobile"
-                                name="businessDetails.businessMobile"
-                                value={profileData.businessDetails.businessMobile}
-                                onChange={handleChange}
-                                disabled={!isEditing}
-                            />
-                            <TextField
-                                fullWidth
-                                label="GSTIN"
-                                name="GST"
-                                value={profileData.GST}
-                                onChange={handleChange}
-                                disabled={!isEditing}
-                            />
-                        </Stack>
-                    </Paper>
+                        {/* Business Details */}
+                        <Paper sx={{ p: 4, borderRadius: 3, border: '1px solid #eee' }} elevation={0}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                                <BusinessIcon color="primary" />
+                                <Typography variant="h6" fontWeight="bold">Business Details</Typography>
+                            </Box>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Business Name"
+                                        name="businessDetails.businessName"
+                                        value={profileData.businessDetails.businessName}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Business Email"
+                                        name="businessDetails.businessEmail"
+                                        value={profileData.businessDetails.businessEmail}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Business Mobile"
+                                        name="businessDetails.businessMobile"
+                                        value={profileData.businessDetails.businessMobile}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Paper>
+
+                        {/* Bank Details */}
+                        <Paper sx={{ p: 4, borderRadius: 3, border: '1px solid #eee' }} elevation={0}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                                <BankIcon color="primary" />
+                                <Typography variant="h6" fontWeight="bold">Bank Details</Typography>
+                            </Box>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Account Holder Name"
+                                        name="bankDetails.accountHolderName"
+                                        value={profileData.bankDetails.accountHolderName}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Account Number"
+                                        name="bankDetails.accountNumber"
+                                        value={profileData.bankDetails.accountNumber}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="IFSC Code"
+                                        name="bankDetails.ifscCode"
+                                        value={profileData.bankDetails.ifscCode}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Bank Name"
+                                        name="bankDetails.bankName"
+                                        value={profileData.bankDetails.bankName}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Paper>
+                    </Stack>
                 </Grid>
 
-                {/* Right Column - Forms */}
-                <Grid item xs={12} md={8}>
-                    {/* Personal Information */}
-                    <Paper sx={{ p: 4, mb: 4 }}>
-                        <Typography variant="h6" gutterBottom fontWeight="600">Personal Information</Typography>
-                        <Divider sx={{ mb: 3 }} />
+                {/* Right Column - Address & Security */}
+                <Grid item xs={12} lg={4}>
+                    <Stack spacing={4}>
+                        <Paper sx={{ p: 4, borderRadius: 3, border: '1px solid #eee' }} elevation={0}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                                <AddressIcon color="primary" />
+                                <Typography variant="h6" fontWeight="bold">Address</Typography>
+                            </Box>
+                            <TextField
+                                fullWidth
+                                label="Business Address"
+                                name="businessDetails.businessAddress"
+                                value={profileData.businessDetails.businessAddress}
+                                onChange={handleChange}
+                                disabled={!isEditing}
+                                multiline
+                                rows={4}
+                            />
+                        </Paper>
 
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Full Name"
-                                    name="sellerName"
-                                    value={profileData.sellerName}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Email Address"
-                                    name="email"
-                                    type="email"
-                                    value={profileData.email}
-                                    disabled // Email usually can't be changed easily
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Phone Number"
-                                    name="mobile"
-                                    value={profileData.mobile}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Paper>
-
-                    {/* Bank Details */}
-                    <Paper sx={{ p: 4, mb: 4 }}>
-                        <Typography variant="h6" gutterBottom fontWeight="600">Bank Details</Typography>
-                        <Divider sx={{ mb: 3 }} />
-
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Account Holder Name"
-                                    name="bankDetails.accountHolderName"
-                                    value={profileData.bankDetails.accountHolderName}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Account Number"
-                                    name="bankDetails.accountNumber"
-                                    value={profileData.bankDetails.accountNumber}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="IFSC Code"
-                                    name="bankDetails.ifscCode"
-                                    value={profileData.bankDetails.ifscCode}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Bank Name"
-                                    name="bankDetails.bankName"
-                                    value={profileData.bankDetails.bankName}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Paper>
-
-                    {/* Address Information */}
-                    <Paper sx={{ p: 4, mb: 4 }}>
-                        <Typography variant="h6" gutterBottom fontWeight="600">Address Information</Typography>
-                        <Divider sx={{ mb: 3 }} />
-
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Business Address"
-                                    name="businessDetails.businessAddress"
-                                    value={profileData.businessDetails.businessAddress}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                    multiline
-                                    rows={3}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Paper>
-
-                    {/* Security / Password - Always editable if not strictly locked */}
-                    <Paper sx={{ p: 4 }}>
-                        <Typography variant="h6" gutterBottom fontWeight="600">Security</Typography>
-                        <Divider sx={{ mb: 3 }} />
-
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
+                        <Paper sx={{ p: 4, borderRadius: 3, border: '1px solid #eee' }} elevation={0}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                                <LockIcon color="primary" />
+                                <Typography variant="h6" fontWeight="bold">Security</Typography>
+                            </Box>
+                            <Stack spacing={3}>
                                 <TextField
                                     fullWidth
                                     label="Current Password"
@@ -372,18 +387,13 @@ const SellerProfile = () => {
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={() => togglePasswordVisibility('current')}
-                                                    edge="end"
-                                                >
+                                                <IconButton onClick={() => togglePasswordVisibility('current')} edge="end">
                                                     {showPassword.current ? <VisibilityOff /> : <Visibility />}
                                                 </IconButton>
                                             </InputAdornment>
                                         )
                                     }}
                                 />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
                                     label="New Password"
@@ -394,51 +404,25 @@ const SellerProfile = () => {
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={() => togglePasswordVisibility('new')}
-                                                    edge="end"
-                                                >
+                                                <IconButton onClick={() => togglePasswordVisibility('new')} edge="end">
                                                     {showPassword.new ? <VisibilityOff /> : <Visibility />}
                                                 </IconButton>
                                             </InputAdornment>
                                         )
                                     }}
                                 />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Confirm New Password"
-                                    name="confirmPassword"
-                                    type={showPassword.confirm ? 'text' : 'password'}
-                                    value={passwordData.confirmPassword}
-                                    onChange={handlePasswordChange}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={() => togglePasswordVisibility('confirm')}
-                                                    edge="end"
-                                                >
-                                                    {showPassword.confirm ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        )
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
                                 <Button
                                     variant="contained"
-                                    color="primary"
-                                    disabled={!passwordData.currentPassword}
+                                    fullWidth
                                     onClick={handleUpdatePassword}
+                                    disabled={!passwordData.newPassword || !passwordData.currentPassword}
+                                    sx={{ py: 1.5, fontWeight: 'bold' }}
                                 >
                                     Update Password
                                 </Button>
-                            </Grid>
-                        </Grid>
-                    </Paper>
+                            </Stack>
+                        </Paper>
+                    </Stack>
                 </Grid>
             </Grid>
         </Box>

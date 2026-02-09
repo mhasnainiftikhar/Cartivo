@@ -1,20 +1,49 @@
 import Products from "../model/Product.js";
 import { calculateDiscountedPrice, findOrCreateCategory } from "../utils/productUtils.js";
+import cloudinary from "../config/cloudinaryConfig.js";
 
 class ProductService {
 
     //Create Product
-    async createProduct(productData, sellerId) {
+    async createProduct(productData, sellerId, files = []) {
 
         const category = await findOrCreateCategory(productData.categoryData);
 
         const sellingPrice = calculateDiscountedPrice(productData.mrpPrice, productData.discountPercentage);
 
+        // Upload images to Cloudinary
+        const imageUrls = [];
+
+        for (const file of files) {
+            try {
+                // Upload buffer to Cloudinary
+                const result = await new Promise((resolve, reject) => {
+                    const uploadStream = cloudinary.uploader.upload_stream(
+                        {
+                            folder: 'cartivo/products',
+                            resource_type: 'image'
+                        },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    uploadStream.end(file.buffer);
+                });
+
+                imageUrls.push(result.secure_url);
+            } catch (error) {
+                console.error('Error uploading image to Cloudinary:', error);
+                throw new Error('Failed to upload image');
+            }
+        }
+
         const newProduct = new Products({
             ...productData,
             sellingPrice,
             category: category._id,
-            seller: sellerId
+            seller: sellerId,
+            images: imageUrls
         });
 
         return await newProduct.save();
