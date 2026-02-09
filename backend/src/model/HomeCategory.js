@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import HomeCategorySection from "../domain/HomeCategorySection";
+import HomeCategorySection from "../domain/HomeCategorySection.js";
 
 const homeCategorySchema = new mongoose.Schema({
     name: {

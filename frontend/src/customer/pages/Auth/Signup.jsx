@@ -8,13 +8,42 @@ import {
     TextField,
     Typography
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { register, sendSignupOtp } from '../../../State/AuthSlice';
+import { useEffect, useState } from 'react';
 
 const Signup = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { auth } = useSelector(store => store);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        otp: ''
+    });
+
+    const handleInputChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSendOtp = () => {
+        if (formData.email) {
+            dispatch(sendSignupOtp(formData.email));
+        }
+    };
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Handle signup logic here
+        dispatch(register(formData));
     };
+
+    useEffect(() => {
+        if (auth.user) {
+            navigate("/");
+        }
+    }, [auth.user, navigate]);
 
     return (
         <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'stretch' }}>
@@ -70,23 +99,52 @@ const Signup = () => {
                             margin="normal"
                             required
                             fullWidth
-                            id="fullName"
+                            id="name"
                             label="Full Name"
-                            name="fullName"
+                            name="name"
                             autoComplete="name"
                             autoFocus
+                            value={formData.name}
+                            onChange={handleInputChange}
                             sx={{ mb: 2 }}
                         />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            sx={{ mb: 2 }}
-                        />
+                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                sx={{ mb: 2, flexGrow: 1 }}
+                            />
+                            <Button
+                                onClick={handleSendOtp}
+                                disabled={auth.loading || !formData.email}
+                                sx={{ height: '56px', mt: '8px', mb: '16px', fontWeight: 'bold' }}
+                            >
+                                {auth.otpSent ? "Resend" : "Send OTP"}
+                            </Button>
+                        </Box>
+
+                        {auth.otpSent && (
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="otp"
+                                label="OTP"
+                                name="otp"
+                                autoComplete="one-time-code"
+                                value={formData.otp}
+                                onChange={handleInputChange}
+                                sx={{ mb: 2 }}
+                            />
+                        )}
+
                         <TextField
                             margin="normal"
                             required
@@ -96,6 +154,8 @@ const Signup = () => {
                             type="password"
                             id="password"
                             autoComplete="new-password"
+                            value={formData.password}
+                            onChange={handleInputChange}
                             sx={{ mb: 2 }}
                         />
 
@@ -116,6 +176,7 @@ const Signup = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
+                            disabled={auth.loading || !auth.otpSent}
                             sx={{
                                 py: 1.5,
                                 fontSize: '1rem',
@@ -126,7 +187,7 @@ const Signup = () => {
                                 mb: 3
                             }}
                         >
-                            Create Account
+                            {auth.loading ? "Creating..." : "Create Account"}
                         </Button>
 
                         <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>

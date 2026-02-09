@@ -1,7 +1,9 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { Button, ThemeProvider } from "@mui/material"
+import { useDispatch, useSelector } from 'react-redux'
+import { ThemeProvider } from "@mui/material"
 import { CustomerTheme } from './theme/CustomerTheme'
+import { getUserProfile } from './State/AuthSlice'
 import Home from './customer/pages/Home'
 import Product from './customer/pages/Product/Product'
 import Navbar from './customer/components/Navbar/Navbar'
@@ -43,6 +45,15 @@ import AdminPlaceholder from './admin/pages/AdminPlaceholder.jsx'
 
 const App = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { auth } = useSelector(store => store);
+
+  useEffect(() => {
+    if (auth.jwt || localStorage.getItem("jwt")) {
+      dispatch(getUserProfile(auth.jwt || localStorage.getItem("jwt")));
+    }
+  }, [auth.jwt, dispatch]);
+
   const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller') || location.pathname.startsWith('/admin');
   const hideFooter = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller') || location.pathname.startsWith('/admin');
 

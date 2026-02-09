@@ -10,13 +10,31 @@ import {
     TextField,
     Typography
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../../../State/AuthSlice';
+import { useEffect } from 'react';
 
 const Login = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { auth } = useSelector(store => store);
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Handle login logic here
+        const data = new FormData(event.currentTarget);
+        const userData = {
+            email: data.get('email'),
+            password: data.get('password'),
+        };
+        dispatch(login(userData));
     };
+
+    useEffect(() => {
+        if (auth.user) {
+            navigate("/");
+        }
+    }, [auth.user, navigate]);
 
     return (
         <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'stretch' }}>

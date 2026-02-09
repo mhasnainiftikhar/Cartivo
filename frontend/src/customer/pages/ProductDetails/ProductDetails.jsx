@@ -45,13 +45,33 @@ const dummyProduct = {
     reviews: 124
 };
 
+import { useSelector } from 'react-redux';
+
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { auth } = useSelector(store => store);
     const [selectedImage, setSelectedImage] = useState(dummyProduct.images[0]);
     const [quantity, setQuantity] = useState(1);
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [selectedColor, setSelectedColor] = useState(dummyProduct.colors[0]);
+
+    const handleAddToCart = () => {
+        if (!auth.user) {
+            navigate("/login");
+            return;
+        }
+        // Proceed with cart logic
+        console.log("Add to cart", dummyProduct, quantity);
+    };
+
+    const handleWishlist = () => {
+        if (!auth.user) {
+            navigate("/login");
+            return;
+        }
+        setIsWishlisted(!isWishlisted);
+    };
 
     const discountedPrice = dummyProduct.price * (1 - dummyProduct.discount / 100);
 
@@ -173,13 +193,14 @@ const ProductDetails = () => {
                                     <Button
                                         variant="contained"
                                         startIcon={<ShoppingCartOutlined />}
+                                        onClick={handleAddToCart}
                                         className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-lg py-4 capitalize shadow-xl shadow-blue-600/20"
                                     >
                                         Add to Cart
                                     </Button>
 
                                     <IconButton
-                                        onClick={() => setIsWishlisted(!isWishlisted)}
+                                        onClick={handleWishlist}
                                         className={`rounded-2xl border-2 p-4 transition-all ${isWishlisted ? 'bg-red-50 border-red-100 text-red-500' : 'bg-white border-gray-100 text-gray-400'}`}
                                     >
                                         {isWishlisted ? <Favorite /> : <FavoriteBorder />}

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import OrderItem from "./OrderItem.js";
 import PaymentStatus from "../domain/PaymentStatus.js";
 

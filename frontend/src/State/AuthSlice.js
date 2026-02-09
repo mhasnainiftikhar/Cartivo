@@ -3,10 +3,19 @@ import api from "../Config/api";
 
 export const login = createAsyncThunk("auth/login", async (userData, { rejectWithValue }) => {
     try {
-        const response = await api.post("/auth/login", userData);
-        if (response.data.jwt) {
-            localStorage.setItem("jwt", response.data.jwt);
+        const response = await api.post("/api/auth/login", userData);
+        if (response.data.token) {
+            localStorage.setItem("jwt", response.data.token);
         }
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
+export const sendSignupOtp = createAsyncThunk("auth/sendSignupOtp", async (email, { rejectWithValue }) => {
+    try {
+        const response = await api.post("/api/auth/signup/otp", { email });
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response.data);
@@ -15,10 +24,23 @@ export const login = createAsyncThunk("auth/login", async (userData, { rejectWit
 
 export const register = createAsyncThunk("auth/register", async (userData, { rejectWithValue }) => {
     try {
-        const response = await api.post("/auth/signup", userData);
-        if (response.data.jwt) {
-            localStorage.setItem("jwt", response.data.jwt);
+        const response = await api.post("/api/auth/signup", userData);
+        if (response.data.token) {
+            localStorage.setItem("jwt", response.data.token);
         }
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
+export const getUserProfile = createAsyncThunk("auth/getUserProfile", async (jwt, { rejectWithValue }) => {
+    try {
+        const response = await api.get("/api/users/profile", {
+            headers: {
+                Authorization: `Bearer ${jwt}`,
+            },
+        });
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response.data);
@@ -30,6 +52,7 @@ const initialState = {
     jwt: localStorage.getItem("jwt") || null,
     loading: false,
     error: null,
+    otpSent: false,
 };
 
 const authSlice = createSlice({
@@ -50,9 +73,23 @@ const authSlice = createSlice({
             })
             .addCase(login.fulfilled, (state, action) => {
                 state.loading = false;
-                state.jwt = action.payload.jwt;
+                state.jwt = action.payload.token;
+                state.user = action.payload.user;
             })
             .addCase(login.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(sendSignupOtp.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.otpSent = false;
+            })
+            .addCase(sendSignupOtp.fulfilled, (state) => {
+                state.loading = false;
+                state.otpSent = true;
+            })
+            .addCase(sendSignupOtp.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
@@ -62,9 +99,22 @@ const authSlice = createSlice({
             })
             .addCase(register.fulfilled, (state, action) => {
                 state.loading = false;
-                state.jwt = action.payload.jwt;
+                state.jwt = action.payload.token;
+                state.user = action.payload.user;
             })
             .addCase(register.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(getUserProfile.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getUserProfile.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+            })
+            .addCase(getUserProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

@@ -1,7 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const ProductCard = ({ product }) => {
+    const navigate = useNavigate();
+    const { auth } = useSelector(store => store);
+
     return (
         <Link to={`/product/${product.id}`} className='group cursor-pointer bg-white rounded-3xl p-4 border border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 block no-underline text-inherit'>
             {/* Product Image */}
@@ -17,6 +20,10 @@ const ProductCard = ({ product }) => {
                 <button
                     onClick={(e) => {
                         e.preventDefault();
+                        if (!auth.user) {
+                            navigate("/login");
+                            return;
+                        }
                         // Add to wishlist logic
                     }}
                     className='absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0'
