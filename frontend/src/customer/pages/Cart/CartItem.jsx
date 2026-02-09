@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { updateCartItem, removeCartItem } from '../../../State/CartSlice';
 import { IconButton, Typography, Box } from '@mui/material';
+import { API_URL } from '../../../Config/api';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -24,7 +25,7 @@ const CartItem = ({ item }) => {
             {/* Product Image */}
             <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl overflow-hidden bg-gray-100 shrink-0">
                 <img
-                    src={item.product?.images?.[0] || item.product?.image}
+                    src={(item.product?.images?.[0] || item.product?.image || '').startsWith('http') ? (item.product?.images?.[0] || item.product?.image) : `${API_URL}/${item.product?.images?.[0] || item.product?.image}`}
                     alt={item.product?.title || item.product?.name}
                     className="w-full h-full object-cover"
                 />

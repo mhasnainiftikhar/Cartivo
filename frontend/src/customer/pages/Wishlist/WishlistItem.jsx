@@ -2,6 +2,7 @@ import { useDispatch } from 'react-redux';
 import { removeProductFromWishlist } from '../../../State/WishlistSlice';
 import { addItemToCart } from '../../../State/CartSlice';
 import { Typography, Box, Button, IconButton } from '@mui/material';
+import { API_URL } from '../../../Config/api';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
@@ -27,7 +28,7 @@ const WishlistItem = ({ item }) => {
             {/* Image Container */}
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-6">
                 <img
-                    src={item.images?.[0] || item.image}
+                    src={(item.images?.[0] || item.image || '').startsWith('http') ? (item.images?.[0] || item.image) : `${API_URL}/${item.images?.[0] || item.image}`}
                     alt={item.title || item.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />

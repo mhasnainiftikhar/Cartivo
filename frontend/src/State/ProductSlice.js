@@ -2,9 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Config/api";
 import { showAlert } from "./AlertSlice";
 
-export const fetchProducts = createAsyncThunk("product/fetchProducts", async (_, { rejectWithValue }) => {
+export const fetchProducts = createAsyncThunk("product/fetchProducts", async (params, { rejectWithValue }) => {
     try {
-        const response = await api.get("/api/products");
+        const response = await api.get("/api/products", { params });
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response.data);

@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { addItemToCart } from '../../../State/CartSlice';
+import { API_URL } from '../../../Config/api';
 import { addProductToWishlist, removeProductFromWishlist } from '../../../State/WishlistSlice';
 import { findProductById } from '../../../State/ProductSlice';
 
@@ -37,6 +37,14 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState("M");
 
+    const getImageUrl = (img) => {
+        if (!img) return 'https://placehold.co/600?text=No+Image';
+        if (typeof img === 'string') {
+            return img.startsWith('http') ? img : `${API_URL}/${img}`;
+        }
+        return img?.url ? (img.url.startsWith('http') ? img.url : `${API_URL}/${img.url}`) : 'https://placehold.co/600?text=No+Image';
+    };
+
     useEffect(() => {
         dispatch(findProductById(id));
     }, [id, dispatch]);
@@ -45,8 +53,8 @@ const ProductDetails = () => {
         if (product.product) {
             const images = product.product.images || [];
             const firstImage = Array.isArray(images) && images.length > 0
-                ? (images[0]?.url || images[0])
-                : (typeof images === 'string' ? images : (product.product.image || 'https://placehold.co/600?text=No+Image'));
+                ? getImageUrl(images[0])
+                : getImageUrl(product.product.image);
 
             setSelectedImage(firstImage);
             setSelectedSize(product.product.size || "M");
@@ -135,23 +143,15 @@ const ProductDetails = () => {
                                 {/* Thumbnails */}
                                 <div className="flex gap-4">
                                     {Array.isArray(p.images) && p.images.map((img, index) => {
-                                        const src = img?.url || img;
+                                        const imageUrl = getImageUrl(img);
                                         return (
-                                            <button
+                                            <div
                                                 key={index}
-                                                onClick={() => setSelectedImage(src)}
-                                                className={`w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all bg-gray-50 ${selectedImage === src ? 'border-blue-600 shadow-lg shadow-blue-500/10' : 'border-transparent'}`}
+                                                onClick={() => setSelectedImage(imageUrl)}
+                                                className={`w-20 h-20 rounded-2xl overflow-hidden cursor-pointer border-2 transition-all ${selectedImage === imageUrl ? 'border-blue-600 shadow-lg' : 'border-gray-100 hover:border-blue-200'}`}
                                             >
-                                                <img
-                                                    src={src}
-                                                    alt=""
-                                                    className="w-full h-full object-contain"
-                                                    onError={(e) => {
-                                                        e.target.onerror = null;
-                                                        e.target.src = 'https://placehold.co/100?text=Error';
-                                                    }}
-                                                />
-                                            </button>
+                                                <img src={imageUrl} alt={`${p.title} ${index}`} className="w-full h-full object-cover" />
+                                            </div>
                                         );
                                     })}
                                 </div>

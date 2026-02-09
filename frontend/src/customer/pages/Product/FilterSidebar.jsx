@@ -1,16 +1,14 @@
 import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
     FormControl,
     FormControlLabel,
-    FormLabel,
     Radio,
     RadioGroup,
     Slider,
     Typography,
     Box,
     Divider,
-    Checkbox,
-    FormGroup
 } from '@mui/material';
 
 const colors = [
@@ -34,6 +32,42 @@ const discounts = [
 ];
 
 const FilterSidebar = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const handleColorChange = (color) => {
+        const newParams = new URLSearchParams(searchParams);
+        const currentColors = newParams.get('color')?.split(',') || [];
+
+        if (currentColors.includes(color)) {
+            const filtered = currentColors.filter(c => c !== color);
+            if (filtered.length === 0) newParams.delete('color');
+            else newParams.set('color', filtered.join(','));
+        } else {
+            currentColors.push(color);
+            newParams.set('color', currentColors.join(','));
+        }
+        setSearchParams(newParams);
+    };
+
+    const handleDiscountChange = (event) => {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('discount', event.target.value);
+        setSearchParams(newParams);
+    };
+
+    const handlePriceChange = (event, newValue) => {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('minPrice', newValue[0]);
+        newParams.set('maxPrice', newValue[1]);
+        setSearchParams(newParams);
+    };
+
+    const clearAll = () => {
+        setSearchParams({});
+    };
+
+    const activeColors = searchParams.get('color')?.split(',') || [];
+
     return (
         <Box className="space-y-8 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm h-fit">
             <Typography variant="h6" className="font-extrabold text-[#001742] mb-4">
@@ -46,17 +80,29 @@ const FilterSidebar = () => {
                     Color
                 </Typography>
                 <Box className="flex flex-wrap gap-3">
-                    {colors.map((color) => (
-                        <Box
-                            key={color.name}
-                            className="w-8 h-8 rounded-full cursor-pointer border-2 border-gray-100 hover:scale-110 transition-transform shadow-sm relative group"
-                            style={{ backgroundColor: color.color }}
-                        >
-                            <Box className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
-                                {color.name}
+                    {colors.map((color) => {
+                        const isActive = activeColors.includes(color.name);
+                        return (
+                            <Box
+                                key={color.name}
+                                onClick={() => handleColorChange(color.name)}
+                                className={`w-8 h-8 rounded-full cursor-pointer border-2 transition-all shadow-sm relative group hover:scale-110 ${isActive ? 'border-blue-600 scale-110 shadow-md' : 'border-gray-100'
+                                    }`}
+                                style={{ backgroundColor: color.color }}
+                            >
+                                <Box className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                                    {color.name}
+                                </Box>
+                                {isActive && (
+                                    <Box className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <svg className={`w-4 h-4 ${color.name === 'White' ? 'text-black' : 'text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </Box>
+                                )}
                             </Box>
-                        </Box>
-                    ))}
+                        );
+                    })}
                 </Box>
             </Box>
 
@@ -69,15 +115,19 @@ const FilterSidebar = () => {
                 </Typography>
                 <Box className="px-2">
                     <Slider
-                        defaultValue={[100, 5000]}
+                        value={[
+                            parseInt(searchParams.get('minPrice')) || 0,
+                            parseInt(searchParams.get('maxPrice')) || 10000
+                        ]}
+                        onChangeCommitted={handlePriceChange}
                         max={10000}
                         min={0}
                         valueLabelDisplay="auto"
                         className="text-blue-600"
                     />
                     <Box className="flex justify-between mt-2">
-                        <Typography variant="body2" className="text-gray-500 font-medium">$0</Typography>
-                        <Typography variant="body2" className="text-gray-500 font-medium">$10,000</Typography>
+                        <Typography variant="body2" className="text-gray-500 font-medium">₹0</Typography>
+                        <Typography variant="body2" className="text-gray-500 font-medium">₹10,000</Typography>
                     </Box>
                 </Box>
             </Box>
@@ -90,7 +140,11 @@ const FilterSidebar = () => {
                     Discount
                 </Typography>
                 <FormControl>
-                    <RadioGroup name="discount-filter">
+                    <RadioGroup
+                        name="discount-filter"
+                        value={searchParams.get('discount') || ''}
+                        onChange={handleDiscountChange}
+                    >
                         {discounts.map((discount) => (
                             <FormControlLabel
                                 key={discount.value}
@@ -110,7 +164,10 @@ const FilterSidebar = () => {
 
             <Divider className="opacity-50" />
 
-            <button className="w-full py-3 bg-[#001742] text-white rounded-xl text-sm font-bold hover:bg-blue-900 transition-all shadow-md shadow-blue-900/10">
+            <button
+                onClick={clearAll}
+                className="w-full py-3 bg-[#001742] text-white rounded-xl text-sm font-bold hover:bg-blue-900 transition-all shadow-md shadow-blue-900/10"
+            >
                 Clear All Filters
             </button>
         </Box>

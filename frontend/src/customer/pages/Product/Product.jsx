@@ -1,86 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import FilterSidebar from './FilterSidebar';
 import ProductCard from './ProductCard';
+import { fetchProducts } from '../../../State/ProductSlice';
 import {
     Box,
     Typography,
     Menu,
     MenuItem,
-    IconButton,
     Button,
     Breadcrumbs,
-    Link
+    Link,
+    CircularProgress
 } from '@mui/material';
 import SortIcon from '@mui/icons-material/Sort';
 
-const dummyProducts = [
-    {
-        id: 1,
-        name: "Apple MacBook Pro 14 M3 Chip - Space Black",
-        brand: "Apple",
-        image: "https://m.media-amazon.com/images/I/71jQbkYw5KL._AC_UY327_FMwebp_QL65_.jpg",
-        price: 1999.00,
-        discount: 10,
-        color: "Black"
-    },
-    {
-        id: 2,
-        name: "Sony Alpha a7 IV Full-frame Mirrorless Camera",
-        brand: "Sony",
-        image: "https://m.media-amazon.com/images/I/714hINuPoBL._AC_UY327_FMwebp_QL65_.jpg",
-        price: 2499.00,
-        discount: 15,
-        color: "Black"
-    },
-    {
-        id: 3,
-        name: "Lace Up Running Shoes - White/Blue",
-        brand: "Adidas",
-        image: "https://m.media-amazon.com/images/I/61w9vJzXL2L._AC_UL480_FMwebp_QL65_.jpg",
-        price: 120.00,
-        discount: 0,
-        color: "White"
-    },
-    {
-        id: 4,
-        name: "Smart Watch Series 9 GPS + Cellular",
-        brand: "Apple",
-        image: "https://m.media-amazon.com/images/I/61afO93SRXL._AC_UL480_FMwebp_QL65_.jpg",
-        price: 499.00,
-        discount: 5,
-        color: "Midnight"
-    },
-    {
-        id: 5,
-        name: "Wireless Over-Ear Noise Cancelling Headphones",
-        brand: "Bose",
-        image: "https://m.media-amazon.com/images/I/51BNWMBG1dL._AC_UL480_FMwebp_QL65_.jpg",
-        price: 349.00,
-        discount: 20,
-        color: "Silver"
-    },
-    {
-        id: 6,
-        name: "Portable Bluetooth Waterproof Speaker",
-        brand: "JBL",
-        image: "https://m.media-amazon.com/images/I/81l7mB5LhsL._AC_UY327_FMwebp_QL65_.jpg",
-        price: 129.99,
-        discount: 0,
-        color: "Blue"
-    }
-];
-
 const Product = () => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const [sortOrder, setSortOrder] = useState('Newest');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const dispatch = useDispatch();
+    const { product } = useSelector(store => store);
+
+    const sortOrder = searchParams.get('sort') || 'Newest';
+
+    useEffect(() => {
+        const params = Object.fromEntries([...searchParams]);
+        dispatch(fetchProducts(params));
+    }, [searchParams, dispatch]);
 
     const handleOpenSortMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
     const handleCloseSortMenu = (order) => {
-        if (order) setSortOrder(order);
+        if (order) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set('sort', order);
+            setSearchParams(newParams);
+        }
         setAnchorEl(null);
+    };
+
+    const handlePageChange = (page) => {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('page', page);
+        setSearchParams(newParams);
     };
 
     return (
@@ -108,16 +73,11 @@ const Product = () => {
                             <Box>
                                 <h1 className="text-2xl lg:text-3xl font-black text-[#001742]">All Products</h1>
                                 <Typography className="text-gray-400 font-medium text-sm mt-1">
-                                    Showing 1-12 of 120 products
+                                    {product.loading ? 'Updating products...' : `Showing ${product.products.length} of ${product.totalElements || product.products.length} products`}
                                 </Typography>
                             </Box>
 
                             <Box className="flex items-center gap-4">
-                                <Box className="hidden md:flex gap-2">
-                                    <Button variant="outlined" size="small" className="rounded-xl border-gray-200 text-gray-600 font-bold px-4">Grid</Button>
-                                    <Button variant="text" size="small" className="rounded-xl text-gray-400 font-bold px-4">List</Button>
-                                </Box>
-
                                 <Box>
                                     <Button
                                         onClick={handleOpenSortMenu}
@@ -144,26 +104,47 @@ const Product = () => {
                         </Box>
 
                         {/* Product Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {dummyProducts.map((product) => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
-                            {/* Duplicate for demo */}
-                            {dummyProducts.map((product) => (
-                                <ProductCard key={`dup-${product.id}`} product={product} />
-                            ))}
-                        </div>
-
-                        {/* Pagination Placeholder */}
-                        <Box className="mt-16 flex justify-center">
-                            <div className="flex gap-2">
-                                <button className="w-12 h-12 rounded-xl bg-[#001742] text-white font-bold shadow-lg shadow-blue-900/20">1</button>
-                                <button className="w-12 h-12 rounded-xl bg-white border border-gray-100 text-gray-600 font-bold hover:bg-gray-50">2</button>
-                                <button className="w-12 h-12 rounded-xl bg-white border border-gray-100 text-gray-600 font-bold hover:bg-gray-50">3</button>
-                                <button className="w-12 h-12 rounded-xl bg-white border border-gray-100 text-gray-600 font-bold hover:bg-gray-50">...</button>
-                                <button className="w-12 h-12 rounded-xl bg-white border border-gray-100 text-gray-600 font-bold hover:bg-gray-50">12</button>
+                        {product.loading ? (
+                            <Box className="flex justify-center py-20">
+                                <CircularProgress color="primary" />
+                            </Box>
+                        ) : product.products.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {product.products.map((p) => (
+                                    <ProductCard key={p._id || p.id} product={p} />
+                                ))}
                             </div>
-                        </Box>
+                        ) : (
+                            <Box className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200">
+                                <Typography variant="h6" className="text-gray-400">No products found for the selected filters.</Typography>
+                                <Button
+                                    onClick={() => setSearchParams({})}
+                                    className="mt-4 text-blue-600 font-bold"
+                                >
+                                    Clear All Filters
+                                </Button>
+                            </Box>
+                        )}
+
+                        {/* Pagination */}
+                        {!product.loading && product.totalPages > 1 && (
+                            <Box className="mt-16 flex justify-center">
+                                <div className="flex gap-2">
+                                    {[...Array(product.totalPages)].map((_, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => handlePageChange(i + 1)}
+                                            className={`w-12 h-12 rounded-xl font-bold transition-all ${(searchParams.get('page') || '1') === (i + 1).toString()
+                                                    ? 'bg-[#001742] text-white shadow-lg shadow-blue-900/20'
+                                                    : 'bg-white border border-gray-100 text-gray-600 hover:bg-gray-50'
+                                                }`}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </Box>
+                        )}
                     </main>
                 </div>
             </div>

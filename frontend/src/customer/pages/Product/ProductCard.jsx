@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { addProductToWishlist, removeProductFromWishlist } from '../../../State/WishlistSlice';
 import { addItemToCart } from '../../../State/CartSlice';
+import { API_URL } from '../../../Config/api';
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
@@ -11,9 +12,13 @@ const ProductCard = ({ product }) => {
 
     const title = product.title || product.name;
     const images = product.images || [];
-    const initialImage = Array.isArray(images) && images.length > 0
+    let initialImage = Array.isArray(images) && images.length > 0
         ? (images[0]?.url || images[0])
         : (typeof images === 'string' ? images : (product.image || 'https://placehold.co/300?text=No+Image'));
+
+    if (initialImage && typeof initialImage === 'string' && !initialImage.startsWith('http')) {
+        initialImage = `${API_URL}/${initialImage}`;
+    }
 
     const [currentImage, setCurrentImage] = React.useState(initialImage);
 
