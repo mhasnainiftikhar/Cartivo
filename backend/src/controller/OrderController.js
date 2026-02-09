@@ -28,10 +28,10 @@ class OrderController {
     // Get order by ID
     async findOrderById(req, res) {
         try {
-            const order = await orderService.findOrderById(req.params.id);
+            const order = await orderService.findOrderById(req.params.id, req.user._id);
             res.status(200).json(order);
         } catch (error) {
-            res.status(404).json({ message: error.message });
+            res.status(403).json({ message: error.message });
         }
     }
 }

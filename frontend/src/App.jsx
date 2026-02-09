@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ThemeProvider } from "@mui/material"
 import { CustomerTheme } from './theme/CustomerTheme'
 import { getUserProfile } from './State/AuthSlice'
+import { fetchCart } from './State/CartSlice'
+import { getWishlist } from './State/WishlistSlice'
 import Home from './customer/pages/Home'
 import Product from './customer/pages/Product/Product'
 import Navbar from './customer/components/Navbar/Navbar'
@@ -52,6 +54,8 @@ const App = () => {
   useEffect(() => {
     if (auth.jwt || localStorage.getItem("jwt")) {
       dispatch(getUserProfile(auth.jwt || localStorage.getItem("jwt")));
+      dispatch(fetchCart());
+      dispatch(getWishlist());
     }
   }, [auth.jwt, dispatch]);
 

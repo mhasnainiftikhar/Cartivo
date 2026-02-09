@@ -1,13 +1,36 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Config/api";
 
-export const fetchCart = createAsyncThunk("cart/fetchCart", async (jwt, { rejectWithValue }) => {
+export const fetchCart = createAsyncThunk("cart/fetchCart", async (_, { rejectWithValue }) => {
     try {
-        const response = await api.get("/api/cart", {
-            headers: {
-                Authorization: `Bearer ${jwt}`,
-            },
-        });
+        const response = await api.get("/api/cart");
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
+export const addItemToCart = createAsyncThunk("cart/addItemToCart", async (reqData, { rejectWithValue }) => {
+    try {
+        const response = await api.put("/api/cart/add", reqData);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
+export const removeCartItem = createAsyncThunk("cart/removeCartItem", async (cartItemId, { rejectWithValue }) => {
+    try {
+        const response = await api.delete(`/api/cart-item/${cartItemId}`);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
+export const updateCartItem = createAsyncThunk("cart/updateCartItem", async ({ cartItemId, quantity }, { rejectWithValue }) => {
+    try {
+        const response = await api.patch(`/api/cart-item/${cartItemId}`, { quantity });
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response.data);
@@ -41,6 +64,36 @@ const cartSlice = createSlice({
             .addCase(fetchCart.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(addItemToCart.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addItemToCart.fulfilled, (state, action) => {
+                state.loading = false;
+                // backend addItem returns the added item, but usually we want to update the cart
+                // For now, let's assume we might need to re-fetch or the backend returns updated cart
+                // If it returns a message, we might need to handle it. 
+                // However, often it's better if backend returns updated cart.
+                // If not, we can manually update or just let fetchCart handle it.
+            })
+            .addCase(removeCartItem.fulfilled, (state, action) => {
+                state.loading = false;
+                // Filter out the removed item from state for immediate UI update
+                if (state.cart && state.cart.cartItems) {
+                    state.cart.cartItems = state.cart.cartItems.filter(item => item._id !== action.meta.arg);
+                    // Recalculate totals if needed, or backend should return updated cart
+                }
+            })
+            .addCase(updateCartItem.fulfilled, (state, action) => {
+                state.loading = false;
+                if (state.cart && state.cart.cartItems) {
+                    const index = state.cart.cartItems.findIndex(item => item._id === action.meta.arg.cartItemId);
+                    if (index !== -1) {
+                        state.cart.cartItems[index].quantity = action.meta.arg.quantity;
+                        // Again, totals might need update or backend returns cart
+                    }
+                }
             });
     },
 });

@@ -45,24 +45,33 @@ const dummyProduct = {
     reviews: 124
 };
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { addItemToCart } from '../../../State/CartSlice';
+import { addProductToWishlist, removeProductFromWishlist } from '../../../State/WishlistSlice';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { auth } = useSelector(store => store);
+    const dispatch = useDispatch();
+    const { auth, wishlist } = useSelector(store => store);
+
     const [selectedImage, setSelectedImage] = useState(dummyProduct.images[0]);
     const [quantity, setQuantity] = useState(1);
-    const [isWishlisted, setIsWishlisted] = useState(false);
     const [selectedColor, setSelectedColor] = useState(dummyProduct.colors[0]);
+
+    const isWishlisted = wishlist.wishlist?.products?.some(p => p._id === id);
 
     const handleAddToCart = () => {
         if (!auth.user) {
             navigate("/login");
             return;
         }
-        // Proceed with cart logic
-        console.log("Add to cart", dummyProduct, quantity);
+        const data = {
+            productId: id,
+            size: selectedColor, // Using color as size for now as per dummy UI
+            quantity: quantity
+        };
+        dispatch(addItemToCart(data));
     };
 
     const handleWishlist = () => {
@@ -70,7 +79,11 @@ const ProductDetails = () => {
             navigate("/login");
             return;
         }
-        setIsWishlisted(!isWishlisted);
+        if (isWishlisted) {
+            dispatch(removeProductFromWishlist(id));
+        } else {
+            dispatch(addProductToWishlist(id));
+        }
     };
 
     const discountedPrice = dummyProduct.price * (1 - dummyProduct.discount / 100);

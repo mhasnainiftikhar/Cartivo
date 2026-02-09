@@ -3,39 +3,13 @@ import { Box, Typography, IconButton, Grid, Button } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import WishlistItem from './WishlistItem';
 import { useNavigate } from 'react-router-dom';
-
-const dummyWishlistItems = [
-    {
-        id: 2,
-        name: "Sony Alpha a7 IV Full-frame Mirrorless Camera",
-        brand: "Sony",
-        image: "https://m.media-amazon.com/images/I/714hINuPoBL._AC_UY327_FMwebp_QL65_.jpg",
-        price: 2499.00,
-        discount: 15,
-        color: "Black"
-    },
-    {
-        id: 5,
-        name: "Wireless Over-Ear Noise Cancelling Headphones",
-        brand: "Bose",
-        image: "https://m.media-amazon.com/images/I/51BNWMBG1dL._AC_UL480_FMwebp_QL65_.jpg",
-        price: 349.00,
-        discount: 20,
-        color: "Silver"
-    },
-    {
-        id: 3,
-        name: "Lace Up Running Shoes - White/Blue",
-        brand: "Adidas",
-        image: "https://m.media-amazon.com/images/I/61w9vJzXL2L._AC_UL480_FMwebp_QL65_.jpg",
-        price: 120.00,
-        discount: 0,
-        color: "White"
-    }
-];
+import { useSelector } from 'react-redux';
 
 const Wishlist = () => {
     const navigate = useNavigate();
+    const { wishlist } = useSelector(store => store);
+
+    const wishlistItems = wishlist.wishlist?.products || [];
 
     return (
         <Box className="min-h-screen bg-gray-50/50 pb-20">
@@ -49,14 +23,14 @@ const Wishlist = () => {
                         <ArrowBackIosNewIcon fontSize="small" />
                     </IconButton>
                     <Typography className="text-3xl lg:text-4xl font-black text-[#001742]">
-                        My Wishlist <span className="text-gray-400 font-bold text-xl ml-2">({dummyWishlistItems.length} items)</span>
+                        My Wishlist <span className="text-gray-400 font-bold text-xl ml-2">({wishlistItems.length} items)</span>
                     </Typography>
                 </div>
 
-                {dummyWishlistItems.length > 0 ? (
+                {wishlistItems.length > 0 ? (
                     <Grid container spacing={4}>
-                        {dummyWishlistItems.map((item) => (
-                            <Grid item xs={12} sm={6} lg={4} xl={3} key={item.id}>
+                        {wishlistItems.map((item) => (
+                            <Grid item xs={12} sm={6} lg={4} xl={3} key={item._id}>
                                 <WishlistItem item={item} />
                             </Grid>
                         ))}

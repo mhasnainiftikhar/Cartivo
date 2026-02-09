@@ -1,9 +1,27 @@
-import React from 'react';
+import { useDispatch } from 'react-redux';
+import { removeProductFromWishlist } from '../../../State/WishlistSlice';
+import { addItemToCart } from '../../../State/CartSlice';
 import { Typography, Box, Button, IconButton } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 const WishlistItem = ({ item }) => {
+    const dispatch = useDispatch();
+
+    const handleRemove = () => {
+        dispatch(removeProductFromWishlist(item._id));
+    };
+
+    const handleMoveToCart = () => {
+        const data = {
+            productId: item._id,
+            quantity: 1,
+            size: "M" // Default size or handle size selection
+        };
+        dispatch(addItemToCart(data));
+        dispatch(removeProductFromWishlist(item._id));
+    };
+
     return (
         <Box className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 group transition-all hover:shadow-xl hover:border-blue-100 flex flex-col h-full">
             {/* Image Container */}
@@ -13,7 +31,10 @@ const WishlistItem = ({ item }) => {
                     alt={item.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <IconButton className="absolute top-4 right-4 bg-white/80 backdrop-blur-md shadow-sm text-gray-400 hover:text-red-500 transition-colors">
+                <IconButton
+                    onClick={handleRemove}
+                    className="absolute top-4 right-4 bg-white/80 backdrop-blur-md shadow-sm text-gray-400 hover:text-red-500 transition-colors"
+                >
                     <DeleteOutlineIcon />
                 </IconButton>
             </div>
@@ -29,11 +50,11 @@ const WishlistItem = ({ item }) => {
 
                 <div className="flex items-center gap-3 mb-6">
                     <Typography className="text-2xl font-black text-[#001742]">
-                        ${item.price.toFixed(2)}
+                        ₹{(item.price * (1 - (item.discount || 0) / 100)).toFixed(2)}
                     </Typography>
                     {item.discount > 0 && (
                         <Typography className="text-sm text-gray-400 line-through font-medium">
-                            ${(item.price * (1 + item.discount / 100)).toFixed(2)}
+                            ₹{item.price.toFixed(2)}
                         </Typography>
                     )}
                 </div>
@@ -41,6 +62,7 @@ const WishlistItem = ({ item }) => {
 
             {/* Actions */}
             <Button
+                onClick={handleMoveToCart}
                 fullWidth
                 variant="outlined"
                 startIcon={<ShoppingCartOutlinedIcon />}

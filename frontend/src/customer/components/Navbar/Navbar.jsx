@@ -125,7 +125,7 @@ const Navbar = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const dispatch = useDispatch();
-    const { auth } = useSelector(store => store);
+    const { auth, cart, wishlist } = useSelector(store => store);
 
     const navigate = useNavigate();
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -357,12 +357,12 @@ const Navbar = () => {
                                     </IconButton>
                                 </Tooltip>
                                 <IconButton onClick={() => navigate('/wishlist')} sx={{ color: '#001742' }}>
-                                    <Badge badgeContent={4} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
+                                    <Badge badgeContent={wishlist.wishlist?.products?.length || 0} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
                                         <WishlistIcon />
                                     </Badge>
                                 </IconButton>
                                 <IconButton onClick={() => navigate('/cart')} sx={{ color: '#001742' }}>
-                                    <Badge badgeContent={2} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
+                                    <Badge badgeContent={cart.cart?.cartItems?.length || 0} color="secondary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16, color: '#001742', fontWeight: 900 } }}>
                                         <CartIcon />
                                     </Badge>
                                 </IconButton>

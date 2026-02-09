@@ -1,12 +1,29 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { addProductToWishlist, removeProductFromWishlist } from '../../../State/WishlistSlice';
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
-    const { auth } = useSelector(store => store);
+    const dispatch = useDispatch();
+    const { auth, wishlist } = useSelector(store => store);
+
+    const isWishlisted = wishlist.wishlist?.products?.some(p => p._id === product.id || p._id === product._id);
+
+    const handleWishlist = (e) => {
+        e.preventDefault();
+        if (!auth.user) {
+            navigate("/login");
+            return;
+        }
+        if (isWishlisted) {
+            dispatch(removeProductFromWishlist(product.id || product._id));
+        } else {
+            dispatch(addProductToWishlist(product.id || product._id));
+        }
+    };
 
     return (
-        <Link to={`/product/${product.id}`} className='group cursor-pointer bg-white rounded-3xl p-4 border border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 block no-underline text-inherit'>
+        <Link to={`/product/${product.id || product._id}`} className='group cursor-pointer bg-white rounded-3xl p-4 border border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 block no-underline text-inherit'>
             {/* Product Image */}
             <div className='relative aspect-square overflow-hidden rounded-2xl bg-gray-50 mb-6'>
                 <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
@@ -18,17 +35,10 @@ const ProductCard = ({ product }) => {
 
                 {/* Wishlist Icon */}
                 <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        if (!auth.user) {
-                            navigate("/login");
-                            return;
-                        }
-                        // Add to wishlist logic
-                    }}
-                    className='absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0'
+                    onClick={handleWishlist}
+                    className={`absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center transition-all shadow-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 ${isWishlisted ? 'text-red-500' : 'text-gray-400 hover:text-red-500 hover:bg-white'}`}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill={isWishlisted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 </button>

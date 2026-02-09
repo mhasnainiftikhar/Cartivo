@@ -3,35 +3,16 @@ import { Box, Typography, Button, Divider, IconButton } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CartItem from './CartItem';
 import { useNavigate } from 'react-router-dom';
-
-const dummyCartItems = [
-    {
-        id: 1,
-        name: "Apple MacBook Pro 14 M3 Chip - Space Black",
-        brand: "Apple",
-        image: "https://m.media-amazon.com/images/I/71jQbkYw5KL._AC_UY327_FMwebp_QL65_.jpg",
-        price: 1999.00,
-        discount: 10,
-        color: "Black"
-    },
-    {
-        id: 4,
-        name: "Smart Watch Series 9 GPS + Cellular",
-        brand: "Apple",
-        image: "https://m.media-amazon.com/images/I/61afO93SRXL._AC_UL480_FMwebp_QL65_.jpg",
-        price: 499.00,
-        discount: 5,
-        color: "Midnight"
-    }
-];
+import { useSelector } from 'react-redux';
 
 const Cart = () => {
     const navigate = useNavigate();
+    const { cart } = useSelector(store => store);
 
-    const subtotal = dummyCartItems.reduce((acc, item) => acc + item.price, 0);
-    const shipping = 20.00;
-    const tax = subtotal * 0.08;
-    const total = subtotal + shipping + tax;
+    const subtotal = cart.cart?.totalMrpPrice || 0;
+    const shipping = cart.cart?.cartItems?.length > 0 ? 20.00 : 0;
+    const discount = cart.cart?.discount || 0;
+    const total = (cart.cart?.totalSellingPrice || 0) + shipping;
 
     return (
         <Box className="min-h-screen bg-gray-50/50 pb-20">
@@ -45,7 +26,7 @@ const Cart = () => {
                         <ArrowBackIosNewIcon fontSize="small" />
                     </IconButton>
                     <Typography className="text-3xl lg:text-4xl font-black text-[#001742]">
-                        Shopping Cart <span className="text-gray-400 font-bold text-xl ml-2">({dummyCartItems.length} items)</span>
+                        Shopping Cart <span className="text-gray-400 font-bold text-xl ml-2">({cart.cart?.cartItems?.length || 0} items)</span>
                     </Typography>
                 </div>
 
@@ -53,10 +34,10 @@ const Cart = () => {
                     {/* Cart Items List */}
                     <div className="flex-1">
                         <Box className="bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-gray-100">
-                            {dummyCartItems.length > 0 ? (
+                            {cart.cart?.cartItems?.length > 0 ? (
                                 <div className="flex flex-col">
-                                    {dummyCartItems.map((item) => (
-                                        <CartItem key={item.id} item={item} />
+                                    {cart.cart.cartItems.map((item) => (
+                                        <CartItem key={item._id} item={item} />
                                     ))}
                                 </div>
                             ) : (
@@ -81,21 +62,21 @@ const Cart = () => {
 
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between items-center text-gray-500 font-medium">
-                                    <span>Subtotal</span>
-                                    <span className="text-[#001742] font-bold">${subtotal.toFixed(2)}</span>
+                                    <span>Subtotal (MRP)</span>
+                                    <span className="text-[#001742] font-bold">₹{subtotal.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-gray-500 font-medium">
+                                    <span>Discount</span>
+                                    <span className="text-green-600 font-bold">-₹{discount.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-gray-500 font-medium">
                                     <span>Shipping</span>
-                                    <span className="text-[#001742] font-bold">${shipping.toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-gray-500 font-medium">
-                                    <span>Tax (8%)</span>
-                                    <span className="text-[#001742] font-bold">${tax.toFixed(2)}</span>
+                                    <span className="text-[#001742] font-bold">₹{shipping.toFixed(2)}</span>
                                 </div>
                                 <Divider className="my-2" />
                                 <div className="flex justify-between items-center">
                                     <span className="text-lg font-black text-[#001742]">Total</span>
-                                    <span className="text-2xl font-black text-blue-600">${total.toFixed(2)}</span>
+                                    <span className="text-2xl font-black text-blue-600">₹{total.toFixed(2)}</span>
                                 </div>
                             </div>
 

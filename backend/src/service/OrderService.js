@@ -9,6 +9,11 @@ class OrderService {
     // Create new order
     async createOrder(user, shippingAddress) {
         try {
+            // Verify shipping address belongs to user
+            if (!user.addresses.some(addr => addr._id.toString() === shippingAddress._id.toString())) {
+                throw new Error("Invalid shipping address. Address must belong to the user.");
+            }
+
             const cart = await cartService.findUserCart(user._id);
             if (!cart || cart.cartItems.length === 0) {
                 throw new Error("Cart is empty");
@@ -63,6 +68,7 @@ class OrderService {
         try {
             return await Order.find({ user: userId })
                 .populate({ path: "orderItems", populate: { path: "product" } })
+                .populate("shippingAddress")
                 .sort({ createdAt: -1 });
         } catch (error) {
             throw new Error(error.message);
@@ -70,7 +76,7 @@ class OrderService {
     }
 
     // Find order by ID
-    async findOrderById(orderId) {
+    async findOrderById(orderId, userId) {
         try {
             const order = await Order.findById(orderId)
                 .populate("user", "name email")
@@ -80,6 +86,12 @@ class OrderService {
             if (!order) {
                 throw new Error("Order not found");
             }
+
+            // Check ownership
+            if (order.user._id.toString() !== userId.toString()) {
+                throw new Error("Unauthorized access to this order.");
+            }
+
             return order;
         } catch (error) {
             throw new Error(error.message);

@@ -14,6 +14,7 @@ import sellerReportRouter from "./routes/SellerReportRoutes.js";
 import dealRouter from "./routes/DealRoutes.js";
 import homeCategoryRouter from "./routes/HomeCategoryRoutes.js";
 import homeRouter from "./routes/HomeRoutes.js";
+import wishlistRouter from "./routes/WishlistRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 
@@ -46,6 +47,7 @@ app.use("/api/seller-reports", sellerReportRouter);
 app.use("/api/deals", dealRouter);
 app.use("/api/home-categories", homeCategoryRouter);
 app.use("/api/home", homeRouter);
+app.use("/api/wishlist", wishlistRouter);
 
 
 // 404 handler

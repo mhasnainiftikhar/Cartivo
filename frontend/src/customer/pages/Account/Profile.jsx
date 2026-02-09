@@ -30,6 +30,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, updateUserProfile, addUserAddress } from '../../../State/AuthSlice';
 import { useNavigate } from 'react-router-dom';
+import { userOrderHistory } from '../../../State/OrderSlice';
 
 const modalStyle = {
     position: 'absolute',
@@ -44,10 +45,11 @@ const modalStyle = {
 };
 
 const Profile = () => {
-    const { auth } = useSelector(store => store);
+    const { auth, order } = useSelector(store => store);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const [activeTab, setActiveTab] = useState('profile');
     const [openProfileModal, setOpenProfileModal] = useState(false);
     const [openAddressModal, setOpenAddressModal] = useState(false);
 
@@ -64,6 +66,12 @@ const Profile = () => {
             });
         }
     }, [auth.user]);
+
+    React.useEffect(() => {
+        if (activeTab === 'orders') {
+            dispatch(userOrderHistory());
+        }
+    }, [activeTab, dispatch]);
 
     const [addressData, setAddressData] = useState({
         name: '',
@@ -148,12 +156,22 @@ const Profile = () => {
                             <Divider sx={{ mb: 2 }} />
 
                             <List component="nav" sx={{ '& .MuiListItem-root': { borderRadius: 1, mb: 1 } }}>
-                                <ListItem button selected sx={{ bgcolor: 'rgba(0,23,66,0.05) !important' }}>
-                                    <ListItemIcon><PersonIcon sx={{ color: '#001742' }} /></ListItemIcon>
+                                <ListItem
+                                    button
+                                    selected={activeTab === 'profile'}
+                                    onClick={() => setActiveTab('profile')}
+                                    sx={{ bgcolor: activeTab === 'profile' ? 'rgba(0,23,66,0.05) !important' : 'transparent' }}
+                                >
+                                    <ListItemIcon><PersonIcon sx={{ color: activeTab === 'profile' ? '#001742' : 'inherit' }} /></ListItemIcon>
                                     <ListItemText primary="Personal Information" primaryTypographyProps={{ fontWeight: 600 }} />
                                 </ListItem>
-                                <ListItem button onClick={() => navigate('/wishlist')}>
-                                    <ListItemIcon><OrderIcon /></ListItemIcon>
+                                <ListItem
+                                    button
+                                    selected={activeTab === 'orders'}
+                                    onClick={() => setActiveTab('orders')}
+                                    sx={{ bgcolor: activeTab === 'orders' ? 'rgba(0,23,66,0.05) !important' : 'transparent' }}
+                                >
+                                    <ListItemIcon><OrderIcon sx={{ color: activeTab === 'orders' ? '#001742' : 'inherit' }} /></ListItemIcon>
                                     <ListItemText primary="My Orders" />
                                     <ChevronRightIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
                                 </ListItem>
@@ -167,124 +185,160 @@ const Profile = () => {
 
                     {/* Main Content */}
                     <Grid item xs={12} md={8}>
-                        <Paper elevation={0} sx={{ p: { xs: 3, md: 6 }, borderRadius: 2, border: '1px solid #eee' }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                                <Typography variant="h4" sx={{ fontWeight: 800, color: '#001742' }}>
-                                    Personal <span style={{ fontFamily: '"Playwrite NZ Basic"', fontWeight: 400 }}>Information</span>
-                                </Typography>
-                                <Button
-                                    onClick={() => setOpenProfileModal(true)}
-                                    startIcon={<EditIcon />}
-                                    sx={{ fontWeight: 700, textTransform: 'none' }}
-                                >
-                                    Edit Profile
-                                </Button>
-                            </Box>
-
-                            <Grid container spacing={4}>
-                                <Grid item xs={12} sm={6}>
-                                    <Box sx={{ mb: 3 }}>
-                                        <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
-                                            Full Name
-                                        </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#001742' }}>
-                                            {auth.user?.name}
-                                        </Typography>
-                                    </Box>
-                                    <Box sx={{ mb: 3 }}>
-                                        <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
-                                            Email Address
-                                        </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#001742' }}>
-                                            {auth.user?.email}
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Box sx={{ mb: 3 }}>
-                                        <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
-                                            Phone Number
-                                        </Typography>
-                                        <Typography variant="body1" sx={{ fontWeight: 500, color: '#001742' }}>
-                                            {auth.user?.mobile || 'Not provided'}
-                                        </Typography>
-                                    </Box>
-                                    <Box sx={{ mb: 3 }}>
-                                        <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
-                                            Account Status
-                                        </Typography>
-                                        <Box sx={{
-                                            display: 'inline-block',
-                                            bgcolor: 'success.light',
-                                            color: 'success.dark',
-                                            px: 1.5,
-                                            py: 0.5,
-                                            borderRadius: 1,
-                                            fontSize: '0.75rem',
-                                            fontWeight: 700
-                                        }}>
-                                            Active
-                                        </Box>
-                                    </Box>
-                                </Grid>
-                            </Grid>
-
-                            <Divider sx={{ my: 4 }} />
-
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 800, color: '#001742' }}>
-                                    Saved Addresses
-                                </Typography>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<AddIcon />}
-                                    onClick={() => setOpenAddressModal(true)}
-                                    sx={{ textTransform: 'none', fontWeight: 600 }}
-                                >
-                                    Add New
-                                </Button>
-                            </Box>
-
-                            {auth.user?.addresses && auth.user.addresses.length > 0 ? (
-                                <Grid container spacing={2}>
-                                    {auth.user.addresses.map((address, index) => (
-                                        <Grid item xs={12} sm={6} key={address._id || index}>
-                                            <Paper
-                                                elevation={0}
-                                                sx={{
-                                                    p: 2,
-                                                    border: '1px solid #eee',
-                                                    borderRadius: 2,
-                                                    position: 'relative',
-                                                    '&:hover': { borderColor: 'primary.main' }
-                                                }}
-                                            >
-                                                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#001742', mb: 0.5 }}>
-                                                    {address.name}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {address.address}, {address.locality}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {address.state} - {address.pincode}
-                                                </Typography>
-                                                <Typography variant="body2" sx={{ mt: 1, fontWeight: 600 }}>
-                                                    Mobile: {address.mobile}
-                                                </Typography>
-                                            </Paper>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            ) : (
-                                <Box sx={{ textAlign: 'center', py: 4, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 2, border: '1px dashed #ccc' }}>
-                                    <LocationIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
-                                    <Typography variant="body2" color="text.secondary">
-                                        No addresses saved yet.
+                        {activeTab === 'profile' ? (
+                            <Paper elevation={0} sx={{ p: { xs: 3, md: 6 }, borderRadius: 2, border: '1px solid #eee' }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                                    <Typography variant="h4" sx={{ fontWeight: 800, color: '#001742' }}>
+                                        Personal <span style={{ fontFamily: '"Playwrite NZ Basic"', fontWeight: 400 }}>Information</span>
                                     </Typography>
-                                    <Button onClick={() => setOpenAddressModal(true)} variant="text" sx={{ mt: 1, fontWeight: 700 }}>Add Address</Button>
+                                    <Button
+                                        onClick={() => setOpenProfileModal(true)}
+                                        startIcon={<EditIcon />}
+                                        sx={{ fontWeight: 700, textTransform: 'none' }}
+                                    >
+                                        Edit Profile
+                                    </Button>
                                 </Box>
-                            )}
-                        </Paper>
+
+                                <Grid container spacing={4}>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ mb: 3 }}>
+                                            <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
+                                                Full Name
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: '#001742' }}>
+                                                {auth.user?.name}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ mb: 3 }}>
+                                            <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
+                                                Email Address
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: '#001742' }}>
+                                                {auth.user?.email}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ mb: 3 }}>
+                                            <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
+                                                Phone Number
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: '#001742' }}>
+                                                {auth.user?.mobile || 'Not provided'}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ mb: 3 }}>
+                                            <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
+                                                Account Status
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'inline-block',
+                                                bgcolor: 'success.light',
+                                                color: 'success.dark',
+                                                px: 1.5,
+                                                py: 0.5,
+                                                borderRadius: 1,
+                                                fontSize: '0.75rem',
+                                                fontWeight: 700
+                                            }}>
+                                                Active
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+
+                                <Divider sx={{ my: 4 }} />
+
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                    <Typography variant="h6" sx={{ fontWeight: 800, color: '#001742' }}>
+                                        Saved Addresses
+                                    </Typography>
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<AddIcon />}
+                                        onClick={() => setOpenAddressModal(true)}
+                                        sx={{ textTransform: 'none', fontWeight: 600 }}
+                                    >
+                                        Add New
+                                    </Button>
+                                </Box>
+
+                                {auth.user?.addresses && auth.user.addresses.length > 0 ? (
+                                    <Grid container spacing={2}>
+                                        {auth.user.addresses.map((address, index) => (
+                                            <Grid item xs={12} sm={6} key={address._id || index}>
+                                                <Paper
+                                                    elevation={0}
+                                                    sx={{
+                                                        p: 2,
+                                                        border: '1px solid #eee',
+                                                        borderRadius: 2,
+                                                        position: 'relative',
+                                                        '&:hover': { borderColor: 'primary.main' }
+                                                    }}
+                                                >
+                                                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#001742', mb: 0.5 }}>
+                                                        {address.name}
+                                                    </Typography>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        {address.address}, {address.locality}
+                                                    </Typography>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        {address.state} - {address.pincode}
+                                                    </Typography>
+                                                    <Typography variant="body2" sx={{ mt: 1, fontWeight: 600 }}>
+                                                        Mobile: {address.mobile}
+                                                    </Typography>
+                                                </Paper>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                ) : (
+                                    <Box sx={{ textAlign: 'center', py: 4, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 2, border: '1px dashed #ccc' }}>
+                                        <LocationIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
+                                        <Typography variant="body2" color="text.secondary">
+                                            No addresses saved yet.
+                                        </Typography>
+                                        <Button onClick={() => setOpenAddressModal(true)} variant="text" sx={{ mt: 1, fontWeight: 700 }}>Add Address</Button>
+                                    </Box>
+                                )}
+                            </Paper>
+                        ) : (
+                            <Paper elevation={0} sx={{ p: { xs: 3, md: 6 }, borderRadius: 2, border: '1px solid #eee' }}>
+                                <Typography variant="h4" sx={{ fontWeight: 800, color: '#001742', mb: 4 }}>
+                                    My <span style={{ fontFamily: '"Playwrite NZ Basic"', fontWeight: 400 }}>Orders</span>
+                                </Typography>
+
+                                {order.loading ? (
+                                    <Typography>Loading orders...</Typography>
+                                ) : order.orders && order.orders.length > 0 ? (
+                                    <Stack spacing={2}>
+                                        {order.orders.map((item) => (
+                                            <Paper key={item._id} elevation={0} sx={{ p: 2, border: '1px solid #eee', borderRadius: 2 }}>
+                                                <Grid container spacing={2} alignItems="center">
+                                                    <Grid item xs={12} sm={6}>
+                                                        <Typography variant="subtitle2" color="text.secondary">Order #{item._id.slice(-8).toUpperCase()}</Typography>
+                                                        <Typography variant="body2" sx={{ fontWeight: 600 }}>Status: {item.orderStatus}</Typography>
+                                                        <Typography variant="body2">Date: {new Date(item.createdAt).toLocaleDateString()}</Typography>
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6} sx={{ textAlign: { sm: 'right' } }}>
+                                                        <Typography variant="h6" sx={{ color: '#001742', fontWeight: 800 }}>₹{item.totalSellingPrice}</Typography>
+                                                        <Button size="small" sx={{ textTransform: 'none', fontWeight: 700 }}>View Details</Button>
+                                                    </Grid>
+                                                </Grid>
+                                            </Paper>
+                                        ))}
+                                    </Stack>
+                                ) : (
+                                    <Box sx={{ textAlign: 'center', py: 8 }}>
+                                        <OrderIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+                                        <Typography variant="h6" color="text.secondary">No orders found.</Typography>
+                                        <Button variant="contained" onClick={() => navigate("/")} sx={{ mt: 2, bgcolor: '#001742' }}>Start Shopping</Button>
+                                    </Box>
+                                )}
+                            </Paper>
+                        )}
                     </Grid>
                 </Grid>
             </Container>
