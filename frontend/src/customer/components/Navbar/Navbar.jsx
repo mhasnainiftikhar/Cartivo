@@ -125,7 +125,7 @@ const Navbar = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const dispatch = useDispatch();
-    const { auth, cart, wishlist } = useSelector(store => store);
+    const { auth, cart, wishlist, seller } = useSelector(store => store);
 
     const navigate = useNavigate();
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -175,6 +175,8 @@ const Navbar = () => {
             </List>
         </Box>
     );
+
+    const isSellerLoggedIn = !!seller.seller;
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -302,26 +304,42 @@ const Navbar = () => {
 
                             {/* Seller Button */}
                             {!isMobile && (
-                                <Button
-                                    variant="outlined"
-                                    onClick={() => navigate('/become-seller')}
-                                    sx={{
-                                        mr: 2,
-                                        color: 'primary.main',
-                                        borderColor: 'primary.main',
-                                        fontWeight: 600,
-                                        textTransform: 'none',
-                                        borderRadius: 8,
-                                        px: 2,
-                                        whiteSpace: 'nowrap',
-                                        '&:hover': {
-                                            bgcolor: 'rgba(0, 23, 66, 0.05)',
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => navigate(isSellerLoggedIn ? '/seller/dashboard' : '/become-seller')}
+                                        sx={{
+                                            mr: 1,
+                                            color: 'primary.main',
                                             borderColor: 'primary.main',
-                                        }
-                                    }}
-                                >
-                                    Become Seller
-                                </Button>
+                                            fontWeight: 600,
+                                            textTransform: 'none',
+                                            borderRadius: 8,
+                                            px: 2,
+                                            whiteSpace: 'nowrap',
+                                            '&:hover': {
+                                                bgcolor: 'rgba(0, 23, 66, 0.05)',
+                                                borderColor: 'primary.main',
+                                            }
+                                        }}
+                                    >
+                                        {isSellerLoggedIn ? 'Dashboard' : 'Become Seller'}
+                                    </Button>
+                                    {!isSellerLoggedIn && !auth.user && (
+                                        <Button
+                                            variant="text"
+                                            onClick={() => navigate('/seller-login')}
+                                            sx={{
+                                                mr: 2,
+                                                color: '#001742',
+                                                fontWeight: 600,
+                                                textTransform: 'none',
+                                            }}
+                                        >
+                                            Seller Login
+                                        </Button>
+                                    )}
+                                </Box>
                             )}
 
                             {/* Action Icons */}

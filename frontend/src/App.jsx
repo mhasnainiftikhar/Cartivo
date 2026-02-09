@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ThemeProvider } from "@mui/material"
 import { CustomerTheme } from './theme/CustomerTheme'
 import { getUserProfile } from './State/AuthSlice'
+import { getSellerProfile } from './State/SellerSlice'
 import { fetchCart } from './State/CartSlice'
 import { getWishlist } from './State/WishlistSlice'
 import Home from './customer/pages/Home'
@@ -38,6 +39,7 @@ import SellerPayments from './seller/pages/Payment/SellerPayments'
 import SellerTransactions from './seller/pages/Transactions/SellerTransactions'
 import SellerProfile from './seller/pages/Profile/SellerProfile'
 import BecomeSeller from './customer/pages/BecomeSeller/BecomeSeller'
+import SellerLogin from './seller/pages/Auth/SellerLogin'
 
 // Admin Imports
 import AdminLayout from './admin/AdminLayout'
@@ -50,7 +52,7 @@ import AlertComponent from './customer/components/Alert/AlertComponent'
 const App = () => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { auth } = useSelector(store => store);
+  const { auth, seller } = useSelector(store => store);
 
   useEffect(() => {
     if (auth.jwt || localStorage.getItem("jwt")) {
@@ -60,8 +62,25 @@ const App = () => {
     }
   }, [auth.jwt, dispatch]);
 
-  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller') || location.pathname.startsWith('/admin');
-  const hideFooter = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/become-seller' || location.pathname.startsWith('/seller') || location.pathname.startsWith('/admin');
+  useEffect(() => {
+    if (seller.sellerJwt || localStorage.getItem("sellerJwt")) {
+      dispatch(getSellerProfile(seller.sellerJwt || localStorage.getItem("sellerJwt")));
+    }
+  }, [seller.sellerJwt, dispatch]);
+
+  const hideNavbar = location.pathname === '/login' ||
+    location.pathname === '/signup' ||
+    location.pathname === '/become-seller' ||
+    location.pathname === '/seller-login' ||
+    location.pathname.startsWith('/seller') ||
+    location.pathname.startsWith('/admin');
+
+  const hideFooter = location.pathname === '/login' ||
+    location.pathname === '/signup' ||
+    location.pathname === '/become-seller' ||
+    location.pathname === '/seller-login' ||
+    location.pathname.startsWith('/seller') ||
+    location.pathname.startsWith('/admin');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -82,6 +101,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/become-seller" element={<BecomeSeller />} />
+        <Route path="/seller-login" element={<SellerLogin />} />
 
         {/* Informational Routes */}
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />

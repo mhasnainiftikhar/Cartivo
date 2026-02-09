@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Stepper,
@@ -13,12 +13,16 @@ import {
     Link,
     IconButton,
     useTheme,
-    useMediaQuery
+    useMediaQuery,
+    CircularProgress
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { sellerSignup, sendSellerSignupOtp } from '../../../State/SellerSlice';
 
 const steps = [
+    'General Details',
     'Tax Details & Mobile',
     'Pickup Address',
     'Bank Details',
@@ -30,25 +34,43 @@ const BecomeSeller = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { seller } = useSelector(store => store);
 
     const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        otp: '',
         mobile: '',
-        gstin: '',
-        street: '',
-        city: '',
-        state: '',
-        pincode: '',
-        accountNumber: '',
-        ifscCode: '',
-        bankName: '',
-        storeName: '',
-        storeDescription: ''
+        GST: '',
+        pickupAddress: {
+            name: '',
+            mobile: '',
+            pincode: '',
+            address: '',
+            city: '',
+            state: '',
+            locality: ''
+        },
+        bankDetails: {
+            accountNumber: '',
+            ifscCode: '',
+            accountHolderName: ''
+        },
+        businessDetails: {
+            businessName: '',
+            businessEmail: '',
+            businessMobile: '',
+            businessAddress: '',
+            logo: '',
+            banner: ''
+        }
     });
 
     const handleNext = () => {
         if (activeStep === steps.length - 1) {
-            // Final submission logic
-            navigate('/seller/dashboard');
+            handleSignup();
         } else {
             setActiveStep((prev) => prev + 1);
         }
@@ -60,12 +82,90 @@ const BecomeSeller = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        if (name.includes('.')) {
+            const [parent, child] = name.split('.');
+            setFormData({
+                ...formData,
+                [parent]: { ...formData[parent], [child]: value }
+            });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
+
+    const handleSendOtp = () => {
+        if (formData.email) {
+            dispatch(sendSellerSignupOtp(formData.email));
+        }
+    };
+
+    const handleSignup = () => {
+        dispatch(sellerSignup(formData));
+    };
+
+    useEffect(() => {
+        if (seller.sellerJwt) {
+            navigate('/seller/dashboard');
+        }
+    }, [seller.sellerJwt, navigate]);
 
     const renderStepContent = (step) => {
         switch (step) {
             case 0:
+                return (
+                    <Box sx={{ mt: 4 }}>
+                        <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>General Details</Typography>
+                        <TextField
+                            fullWidth
+                            label="Full Name"
+                            name="name"
+                            variant="outlined"
+                            sx={{ mb: 3 }}
+                            value={formData.name}
+                            onChange={handleInputChange}
+                        />
+                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', mb: 3 }}>
+                            <TextField
+                                fullWidth
+                                label="Email Address"
+                                name="email"
+                                variant="outlined"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                            />
+                            <Button
+                                variant="contained"
+                                onClick={handleSendOtp}
+                                disabled={!formData.email || seller.loading}
+                                sx={{ py: 1.8, bgcolor: '#00897b', '&:hover': { bgcolor: '#00796b' } }}
+                            >
+                                {seller.loading ? <CircularProgress size={24} color="inherit" /> : 'OTP'}
+                            </Button>
+                        </Box>
+                        {seller.otpSent && (
+                            <TextField
+                                fullWidth
+                                label="OTP"
+                                name="otp"
+                                variant="outlined"
+                                sx={{ mb: 3 }}
+                                value={formData.otp}
+                                onChange={handleInputChange}
+                            />
+                        )}
+                        <TextField
+                            fullWidth
+                            label="Password"
+                            name="password"
+                            type="password"
+                            variant="outlined"
+                            sx={{ mb: 3 }}
+                            value={formData.password}
+                            onChange={handleInputChange}
+                        />
+                    </Box>
+                );
+            case 1:
                 return (
                     <Box sx={{ mt: 4 }}>
                         <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>Contact Details</Typography>
@@ -81,58 +181,10 @@ const BecomeSeller = () => {
                         <TextField
                             fullWidth
                             label="GSTIN Number"
-                            name="gstin"
+                            name="GST"
                             variant="outlined"
                             sx={{ mb: 3 }}
-                            value={formData.gstin}
-                            onChange={handleInputChange}
-                        />
-                    </Box>
-                );
-            case 1:
-                return (
-                    <Box sx={{ mt: 4 }}>
-                        <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>Pickup Address</Typography>
-                        <TextField
-                            fullWidth
-                            label="Street Address"
-                            name="street"
-                            variant="outlined"
-                            sx={{ mb: 3 }}
-                            value={formData.street}
-                            onChange={handleInputChange}
-                        />
-                        <Grid container spacing={2}>
-                            <Grid item xs={6}>
-                                <TextField
-                                    fullWidth
-                                    label="City"
-                                    name="city"
-                                    variant="outlined"
-                                    sx={{ mb: 3 }}
-                                    value={formData.city}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField
-                                    fullWidth
-                                    label="State"
-                                    name="state"
-                                    variant="outlined"
-                                    sx={{ mb: 3 }}
-                                    value={formData.state}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                        </Grid>
-                        <TextField
-                            fullWidth
-                            label="Pincode"
-                            name="pincode"
-                            variant="outlined"
-                            sx={{ mb: 3 }}
-                            value={formData.pincode}
+                            value={formData.GST}
                             onChange={handleInputChange}
                         />
                     </Box>
@@ -140,32 +192,47 @@ const BecomeSeller = () => {
             case 2:
                 return (
                     <Box sx={{ mt: 4 }}>
-                        <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>Bank Details</Typography>
+                        <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>Pickup Address</Typography>
                         <TextField
                             fullWidth
-                            label="Account Number"
-                            name="accountNumber"
+                            label="Street Address"
+                            name="pickupAddress.address"
                             variant="outlined"
                             sx={{ mb: 3 }}
-                            value={formData.accountNumber}
+                            value={formData.pickupAddress.address}
                             onChange={handleInputChange}
                         />
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    label="City"
+                                    name="pickupAddress.city"
+                                    variant="outlined"
+                                    sx={{ mb: 3 }}
+                                    value={formData.pickupAddress.city}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    label="State"
+                                    name="pickupAddress.state"
+                                    variant="outlined"
+                                    sx={{ mb: 3 }}
+                                    value={formData.pickupAddress.state}
+                                    onChange={handleInputChange}
+                                />
+                            </Grid>
+                        </Grid>
                         <TextField
                             fullWidth
-                            label="IFSC Code"
-                            name="ifscCode"
+                            label="Pincode"
+                            name="pickupAddress.pincode"
                             variant="outlined"
                             sx={{ mb: 3 }}
-                            value={formData.ifscCode}
-                            onChange={handleInputChange}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Bank Name"
-                            name="bankName"
-                            variant="outlined"
-                            sx={{ mb: 3 }}
-                            value={formData.bankName}
+                            value={formData.pickupAddress.pincode}
                             onChange={handleInputChange}
                         />
                     </Box>
@@ -173,25 +240,57 @@ const BecomeSeller = () => {
             case 3:
                 return (
                     <Box sx={{ mt: 4 }}>
+                        <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>Bank Details</Typography>
+                        <TextField
+                            fullWidth
+                            label="Account Number"
+                            name="bankDetails.accountNumber"
+                            variant="outlined"
+                            sx={{ mb: 3 }}
+                            value={formData.bankDetails.accountNumber}
+                            onChange={handleInputChange}
+                        />
+                        <TextField
+                            fullWidth
+                            label="IFSC Code"
+                            name="bankDetails.ifscCode"
+                            variant="outlined"
+                            sx={{ mb: 3 }}
+                            value={formData.bankDetails.ifscCode}
+                            onChange={handleInputChange}
+                        />
+                        <TextField
+                            fullWidth
+                            label="Account Holder Name"
+                            name="bankDetails.accountHolderName"
+                            variant="outlined"
+                            sx={{ mb: 3 }}
+                            value={formData.bankDetails.accountHolderName}
+                            onChange={handleInputChange}
+                        />
+                    </Box>
+                );
+            case 4:
+                return (
+                    <Box sx={{ mt: 4 }}>
                         <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }}>Supplier Details</Typography>
                         <TextField
                             fullWidth
                             label="Store Name"
-                            name="storeName"
+                            name="businessDetails.businessName"
                             variant="outlined"
                             sx={{ mb: 3 }}
-                            value={formData.storeName}
+                            value={formData.businessDetails.businessName}
                             onChange={handleInputChange}
                         />
                         <TextField
                             fullWidth
                             label="Store Description"
-                            name="storeDescription"
+                            name="businessDetails.businessMobile"
                             variant="outlined"
-                            multiline
-                            rows={4}
+                            placeholder="Store Mobile"
                             sx={{ mb: 3 }}
-                            value={formData.storeDescription}
+                            value={formData.businessDetails.businessMobile}
                             onChange={handleInputChange}
                         />
                     </Box>
@@ -255,6 +354,7 @@ const BecomeSeller = () => {
                                 variant="contained"
                                 onClick={handleNext}
                                 fullWidth
+                                disabled={seller.loading}
                                 sx={{
                                     bgcolor: '#00897b',
                                     '&:hover': { bgcolor: '#00796b' },
@@ -263,7 +363,7 @@ const BecomeSeller = () => {
                                     textTransform: 'none'
                                 }}
                             >
-                                {activeStep === steps.length - 1 ? 'FINISH' : 'CONTINUE'}
+                                {seller.loading ? <CircularProgress size={24} color="inherit" /> : (activeStep === steps.length - 1 ? 'FINISH' : 'CONTINUE')}
                             </Button>
                         </Box>
 
@@ -273,7 +373,7 @@ const BecomeSeller = () => {
                             </Typography>
                             <Button
                                 variant="outlined"
-                                onClick={() => navigate('/login')}
+                                onClick={() => navigate('/seller-login')}
                                 fullWidth
                                 sx={{
                                     borderColor: '#00897b',
