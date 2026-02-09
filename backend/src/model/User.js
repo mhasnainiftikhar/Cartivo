@@ -20,10 +20,11 @@ const userSchema = new mongoose.Schema(
         mobile: {
             type: String,
         },
-        addresses: {
+        addresses: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: "Address"
-        },
+        }],
+        default: [],
         role: {
             type: String,
             enum: [UserRoles.CUSTOMER, UserRoles.ADMIN],

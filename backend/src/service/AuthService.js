@@ -9,7 +9,7 @@ import {
   loginOtpTemplate,
   signupOtpTemplate,
 } from "../utils/emailTemplates.js";
-import { hashPassword } from "../utils/hashUtils.js";
+import { hashPassword, comparePassword } from "../utils/hashUtils.js";
 
 class AuthService {
 
@@ -96,8 +96,9 @@ class AuthService {
 
     await VerificationCode.deleteOne({ email });
 
+    const populatedUser = await User.findById(user._id).populate("addresses");
     const token = jwtProvider.createJwt({ email: user.email });
-    return { token, user };
+    return { token, user: populatedUser };
   }
 
   // Login Implementation (Password only)
@@ -113,12 +114,13 @@ class AuthService {
     }
 
     const token = jwtProvider.createJwt({ email: user.email });
-    
+
     user.password = undefined;
-    return { token, user };
+    const populatedUser = await User.findById(user._id).populate("addresses");
+    return { token, user: populatedUser };
   }
 
-  
+
   async createUser(req) {
     const { email, fullName } = req;
 
@@ -128,7 +130,7 @@ class AuthService {
     }
 
     user = new User({
-      email, name: fullName, password: await hashPassword("defaultPassword") // This seems incomplete in original
+      email, name: fullName, password: await hashPassword("defaultPassword")
     })
 
     await user.save();

@@ -47,6 +47,24 @@ export const getUserProfile = createAsyncThunk("auth/getUserProfile", async (jwt
     }
 });
 
+export const updateUserProfile = createAsyncThunk("auth/updateUserProfile", async (userData, { rejectWithValue }) => {
+    try {
+        const response = await api.patch("/api/users/profile", userData);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
+export const addUserAddress = createAsyncThunk("auth/addUserAddress", async (addressData, { rejectWithValue }) => {
+    try {
+        const response = await api.post("/api/users/addresses", addressData);
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response.data);
+    }
+});
+
 const initialState = {
     user: null,
     jwt: localStorage.getItem("jwt") || null,
@@ -117,6 +135,14 @@ const authSlice = createSlice({
             .addCase(getUserProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+            })
+            .addCase(addUserAddress.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
             });
     },
 });

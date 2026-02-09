@@ -17,7 +17,7 @@ const authenticate = async (req, res, next) => {
         if (!email) {
             return res.status(401).json({ message: "Invalid token" });
         }
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).populate("addresses");
         if (user) {
             req.user = user;
             return next();
