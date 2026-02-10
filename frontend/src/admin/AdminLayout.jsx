@@ -29,7 +29,7 @@ const AdminLayout = () => {
                     }),
                 }}
             >
-                <Toolbar /> {/* Top spacer */}
+                <Toolbar /> 
                 <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
                     <Outlet />
                 </Box>
